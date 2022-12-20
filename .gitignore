@@ -28,3 +28,4 @@ _ReSharper*/
 Utils/PasswordHasher.cs
 appsettings.json
 Data/DbInitializer.cs
+Utils/TokenHandler.cs
