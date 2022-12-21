@@ -8,9 +8,7 @@
     <body class="main">
         <links-panel actualRef="/"></links-panel>
         <div class="textWrapper">
-            <p>
-                <p id="annotation">Вы вошли как </p>  <a href="/self-redaction">(редактировать запись)</a>
-            </p>
+            <p id="annotation">Вы вошли как </p>
         </div>
 		<script src="/index.js" type="module"></script>
     </body>

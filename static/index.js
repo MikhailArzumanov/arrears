@@ -19,8 +19,13 @@ function init(){
         case "magister":
         case "student":
             annotation = `${data.surname} ${data.name} ${data.patronymicName}`;
+            break;
+        case "admin":
+            annotation = 'администратор'
     } 
 
     let paragraph = document.getElementById('annotation');
     paragraph.innerHTML += annotation;
+    if(type != 'admin') 
+        paragraph.innerHTML += '<a href="/self-redaction">(редактировать запись)</a>'
 }
