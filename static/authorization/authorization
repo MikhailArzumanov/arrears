@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>Авторизация</title>
+        <link rel="stylesheet" 
+        href="/authorization/authorization.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    
+    <body>
+        <script src="/authorization/authorization.js" type="module"></script>
+        <div class="loginForm">
+            <p> Войти как:
+                <select id="typeField">
+                    <option disabled value="0">Тип записи...</option>
+                    <option value="student">Студент</option>
+                    <option value="magister">Преподаватель</option>
+                    <option value="department">Кафедра</option>
+                    <option value="faculty">Институт</option>
+                </select>
+            </p>
+            <input type="text"     id="loginField"    placeholder="Логин"/>
+            <input type="password" id="passwordField" placeholder="Пароль"/>
+            <button id="loginButton">Авторизоваться</button>
+        </div>
+        <error-bar></error-bar>
+    </body>
+</html>

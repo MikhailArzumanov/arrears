@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Главная страница</title>
+        <link rel="stylesheet" href="/index.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <common-header actualRef="/"></common-header>
+        <div class="textWrapper">
+            <p id="annotation">Вы вошли как </p>
+        </div>
+		<script src="/index.js" type="module"></script>
+    </body>
+</html>
