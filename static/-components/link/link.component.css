@@ -25,3 +25,10 @@
         padding: 3px 12px;
     }
 }
+
+@media (max-width: 599px) {
+    .panelLink{
+        height: 16px;
+        padding: 2px 7px;
+    }
+}

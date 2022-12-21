@@ -87,3 +87,22 @@
         padding: 3px 12px;
     }
 }
+
+@media (max-width: 599px) {
+    .linksPanel{
+        height: 23px;
+        font-size: 12px;
+    }
+    
+    .panelLogoutButton{
+        height: 16px;
+        font-size: 7px;
+        padding: 2px 7px;
+    }
+    
+    .panelLogoutButton:active{
+        height: 16px;
+        font-size: 7px;
+        padding: 2px 7px;
+    }
+}
