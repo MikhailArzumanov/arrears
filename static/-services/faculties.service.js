@@ -1,6 +1,6 @@
-import { http } from '../_http/http.js';
-import { AuthData } from '../_models/auth-data.model.js';
-import {AuthorizedService} from './_base_services/authorized.service.js';
+import { http } from '../-http/http.js';
+import { AuthData } from '../-models/auth-data.model.js';
+import {AuthorizedService} from './-base-services/authorized.service.js';
 
 export class FacultiesService extends AuthorizedService{
     static CONTROLLER_NAME = 'faculties';

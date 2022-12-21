@@ -1,8 +1,8 @@
 import { fadeIn } from "../functions/fade.js";
 import { redirect } from "../functions/redirect.js";
-import { FacultiesService } from "../_services/faculties.service.js";
-import { ErrorsService } from "../_services/_base_services/errors.service.js";
-import { TokensService } from "../_services/_base_services/tokens.service.js";
+import { FacultiesService } from "../-services/faculties.service.js";
+//import { ErrorsService } from "../-services/-base-services/errors.service.js";
+import { TokensService } from "../-services/-base-services/tokens.service.js";
 
 
 fadeIn();

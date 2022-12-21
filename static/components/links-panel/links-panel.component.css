@@ -1,0 +1,70 @@
+.linksPanel{
+    width: 99%;
+    height: 120px;
+    font-size: 48px;
+    font-family: Tahoma;
+    background: white;
+    border: 1px solid black;
+    border-left: none;
+    border-right: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panelLogoutButton{
+    height: 70px;
+    display: inline-block;
+    color: black;
+    font-size: 34px;
+    padding: 12px 34px;
+    border: none;
+    background: none;
+}
+.panelLogoutButton:active{
+    height: 70px;
+    display: inline-block;
+    color: black;
+    font-size: 34px;
+    padding: 12px 34px;
+    border: none;
+    background: none;
+}
+
+@media (max-width: 1200px) {
+    .linksPanel{
+        height: 70px;
+        font-size: 34px;
+    }
+    
+    .panelLogoutButton{
+        height: 48px;
+        font-size: 23px;
+        padding: 7px 23px;
+    }
+
+    .panelLogoutButton:active{
+        height: 48px;
+        font-size: 23px;
+        padding: 7px 23px;
+    }
+}
+
+@media (max-width: 800px) {
+    .linksPanel{
+        height: 48px;
+        font-size: 23px;
+    }
+    
+    .panelLogoutButton{
+        height: 34px;
+        font-size: 16px;
+        padding: 4px 16px;
+    }
+    
+    .panelLogoutButton:active{
+        height: 34px;
+        font-size: 16px;
+        padding: 4px 16px;
+    }
+}

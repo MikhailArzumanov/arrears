@@ -1,4 +1,4 @@
-import { AuthorizedService } from "../_services/_base_services/authorized.service.js";
+import { AuthorizedService } from "../-services/-base-services/authorized.service.js";
 
 const ADDRESS = "http://localhost"
 

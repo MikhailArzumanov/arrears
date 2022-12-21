@@ -6,9 +6,11 @@
         <script src="/defining.js" type="module"></script>
     </head>
     <body class="main">
-        <common-header actualRef="/"></common-header>
+        <links-panel actualRef="/"></links-panel>
         <div class="textWrapper">
-            <p id="annotation">Вы вошли как </p>
+            <p>
+                <p id="annotation">Вы вошли как </p>  <a href="/self-redaction">(редактировать запись)</a>
+            </p>
         </div>
 		<script src="/index.js" type="module"></script>
     </body>

@@ -57,4 +57,11 @@ export class AuthorizedService extends BaseService{
         let type = this.getAuthorizedType;
         return !!type;
     }
+
+    static logout(){
+        sessionStorage.removeItem(this.getAuthorizedType);
+        sessionStorage.removeItem(AUTH_DATA_TYPE_KEY)    ;
+        sessionStorage.removeItem(AUTHORIZATION_DATA_KEY);
+        sessionStorage.removeItem(TOKEN_KEY)             ;
+    }
 }

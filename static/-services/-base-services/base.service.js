@@ -1,4 +1,4 @@
-import {http} from "../../_http/http.js"
+import {http} from "../../-http/http.js"
 
 export class BaseService{
     //static http = new http()

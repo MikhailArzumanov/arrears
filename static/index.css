@@ -25,6 +25,13 @@ p{
     margin: auto;
 }
 
-.main p a{
+.main a{
     color: black;
+    font-size: 23px;
+    font-family: Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main #annotation{
+    display: inline;
+    padding: 0;
 }

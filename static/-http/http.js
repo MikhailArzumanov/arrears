@@ -1,4 +1,4 @@
-import { ErrorsService } from "../_services/_base_services/errors.service.js";
+import { ErrorsService } from "../-services/-base-services/errors.service.js";
 import {ParamValidator} from "./ParamValidator.js";
 
 export class http{
