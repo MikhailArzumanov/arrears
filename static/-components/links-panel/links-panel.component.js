@@ -1,6 +1,6 @@
 import { Link } from "../-models/link.model.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
-import { redirect } from "../../functions/redirect.js";
+import { redirect } from "../../-functions/redirect.js";
 
 
 export class LinksPanelComponent extends HTMLElement{

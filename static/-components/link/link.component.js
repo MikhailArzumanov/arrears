@@ -1,4 +1,4 @@
-import { redirect } from "../../functions/redirect.js";
+import { redirect } from "../../-functions/redirect.js";
 
 export class LinkComponent extends HTMLElement{
     constructor(){

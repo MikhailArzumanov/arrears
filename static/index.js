@@ -1,5 +1,5 @@
-import { fadeIn } from "./functions/fade.js";
-import { redirectIfIsntAuthorized } from "./functions/redirection.js";
+import { fadeIn } from "./-functions/fade.js";
+import { redirectIfIsntAuthorized } from "./-functions/redirection.js";
 import { AuthorizedService } from "./-services/-base-services/authorized.service.js";
 redirectIfIsntAuthorized();
 setTimeout(fadeIn,400);
