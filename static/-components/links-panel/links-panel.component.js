@@ -11,7 +11,7 @@ export class LinksPanelComponent extends HTMLElement{
         new Link('/groups',         'Группы',           ['admin', 'faculty', 'department']),
         new Link('/students',       'Студенты',         ['admin', 'faculty', 'department', 'group']),
         new Link('/disciplines',    'Дисциплины',       ['admin', 'faculty', 'department']),
-        new Link('/arrears',        'Долговые листы',   ['admin', 'faculty', 'department', 'group', 'magister', 'student']),
+        new Link('/arrears',        'Листы',   ['admin', 'faculty', 'department', 'group', 'magister', 'student']),
     ];
 
     constructor(){
