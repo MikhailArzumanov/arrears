@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Список институтов</title>
+        <link rel="stylesheet" href="/departments/list/departments-list.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/departments"></links-panel>
+        <departments-panel currentLink="/departments/list"></departments-panel>
+        <table id="departmentsTable">
+            <tr class="tableHeader">
+                <th class="idCol">     Id       </th>
+                <th class="nameCol">   Имя      </th>
+                <th class="facultyCol">Институт </th>
+                <th class="redactCol">          </th>
+                <th class="deleteCol">          </th>
+            </tr>
+        </table>
+		<script src="/departments/list/departments-list.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>

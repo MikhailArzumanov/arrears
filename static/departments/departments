@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Кафедры</title>
+        <link rel="stylesheet" href="/departments/departments.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/departments"></links-panel>
+        <departments-panel currentLink="/departments"></departments-panel>
+		<script src="/departments/departments.js" type="module"></script>
+    </body>
+</html>

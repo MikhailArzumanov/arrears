@@ -18,20 +18,6 @@ export class DepartmentsService extends AuthorizedService{
         return await http.post(url,headers,params,body,false);
     }
 
-    static async selfRedact(newAuthData, oldAuthData){
-        let METHOD_NAME = '';
-        let headers = this.getTokenHeaders();
-            headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {}
-        let departmentData          = this.getAuthorizedData;
-            departmentData.login    = newAuthData.login;
-            departmentData.password = newAuthData.password;
-        let url  = `${this.CONTROLLER_URL}/${departmentData.id}`;
-        let body = new DepartmentRedactionRequest(oldAuthData,departmentData);
-        return await http.put(url,headers,params,body,false);
-    }
-
-
     static async getAll(facultyId){
         let METHOD_NAME = 'all';
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
@@ -50,6 +36,51 @@ export class DepartmentsService extends AuthorizedService{
         return await http.get(url,headers,params,false);
     }
 
+    static async addDepartment(department){
+        let METHOD_NAME = "add";
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {};
+        let body = new DepartmentRedactionRequest(this.getAuthorizationData, department);
+        return await http.post(url,headers,params,body,false);
+    }
+    
+    
+
+    static async selfRedact(newAuthData, oldAuthData){
+        let METHOD_NAME = '';
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {authType: this.getAuthorizedType}
+        let departmentData          = this.getAuthorizedData;
+            departmentData.login    = newAuthData.login;
+            departmentData.password = newAuthData.password;
+        let url  = `${this.CONTROLLER_URL}/${departmentData.id}`;
+        let body = new DepartmentRedactionRequest(oldAuthData,departmentData);
+        return await http.put(url,headers,params,body,false);
+    }
+
+    static async redactDepartment(department){
+        let METHOD_NAME = "";
+        let url = `${this.CONTROLLER_URL}/${department.id}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {authType: this.getAuthorizedType};
+        let body = new DepartmentRedactionRequest(this.getAuthorizationData, department);
+        return await http.put(url,headers,params,body,false);
+    }
+
+    static async deleteDepartment(id){
+        let METHOD_NAME = 'delete';
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {};
+        let body   = this.getAuthorizationData;
+        return await http.post(url,headers,params,body,false);
+    }
+
     static async redactAsAdministrator(department){
         let METHOD_NAME = "admin";
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${department.id}`;
@@ -60,7 +91,7 @@ export class DepartmentsService extends AuthorizedService{
         return await http.put(url,headers,params,body,false);
     }
 
-    static async addDepartment(department){
+    static async addDepartmentAsAdministrator(department){
         let METHOD_NAME = "admin/add";
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
@@ -70,7 +101,7 @@ export class DepartmentsService extends AuthorizedService{
         return await http.post(url,headers,params,body,false);
     }
 
-    static async deleteDepartment(id){
+    static async deleteDepartmentAsAdministartor(id){
         let METHOD_NAME = 'admin';
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
         let headers = this.getTokenHeaders();

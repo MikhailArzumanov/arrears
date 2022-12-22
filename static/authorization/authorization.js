@@ -4,7 +4,7 @@ import { FacultiesService } from "../-services/faculties.service.js";
 //import { ErrorsService } from "../-services/-base-services/errors.service.js";
 import { TokensService } from "../-services/-base-services/tokens.service.js";
 import { showError } from "../-functions/showError.js";
-import { DepartmentsService } from "../-services/department.service.js";
+import { DepartmentsService } from "../-services/departments.service.js";
 
 
 fadeIn();
