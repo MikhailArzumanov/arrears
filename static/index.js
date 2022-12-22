@@ -27,5 +27,5 @@ function init(){
     let paragraph = document.getElementById('annotation');
     paragraph.innerHTML += annotation;
     if(type != 'admin') 
-        paragraph.innerHTML += '<a href="/self-redaction">(редактировать запись)</a>'
+        paragraph.innerHTML += ' <a href="/self-redaction">(редактировать запись)</a>'
 }

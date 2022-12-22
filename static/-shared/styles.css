@@ -1,0 +1,6 @@
+select{
+    background: white;
+    border: 2px solid lightgray;
+    border-left: 2px solid gray;
+    border-top: 2px solid gray;
+}

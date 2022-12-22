@@ -13,7 +13,7 @@
         <div class="loginForm">
             <p> Войти как:
                 <select id="typeField">
-                    <option disabled value="0">Тип записи...</option>
+                    <!--<option disabled value="0">Тип записи...</option>-->
                     <option value="student">Студент</option>
                     <option value="magister">Преподаватель</option>
                     <option value="department">Кафедра</option>

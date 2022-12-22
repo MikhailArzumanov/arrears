@@ -1,3 +1,4 @@
+import { ErrorBarComponent } from "./-components/error-bar/error-bar.component.js";
 import { LinkComponent } from "./-components/link/link.component.js";
 import { LinksPanelComponent } from "./-components/links-panel/links-panel.component.js";
 
@@ -10,6 +11,10 @@ function addStyles(stylesPath){
     head.appendChild(styleElement);
 }
 
+addStyles('/-shared/styles.css');
+
+customElements.define('error-bar', ErrorBarComponent);
+addStyles('/-components/error-bar/error-bar.component.css');
 customElements.define('links-panel', LinksPanelComponent);
 addStyles('/-components/links-panel/links-panel.component.css');
 customElements.define('panel-link', LinkComponent);
