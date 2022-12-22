@@ -7,6 +7,7 @@ import { showError } from "../-functions/showError.js";
 
 
 fadeIn();
+
 document.addEventListener('keydown', (event)=>{
     if(event.code == "Enter") login();
     else if(event.code == "ArrowDown"
@@ -23,7 +24,7 @@ async function login(){
     let login    = getValById('loginField');
     let password = getValById('passwordField');
     let type     = getValById('typeField');
-    if(type == 0) showError("Выберите тип авторизации");
+    if(type == 0) showError("Выберите тип авторизации", errorBar);
     
     let response
 
@@ -46,7 +47,7 @@ async function login(){
     }
 
     if(response == null){
-        showError("Введённые данные некорректны");
+        showError("Введённые данные некорректны", errorBar);
     }
     else if(!!response){
         console.log(response);

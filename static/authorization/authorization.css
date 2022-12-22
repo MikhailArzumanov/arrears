@@ -3,7 +3,7 @@ body{
     padding: 0;
     margin: 0;
     border: none;
-    transition: opacity, 0.4s; 
+    transition: opacity, 1s; 
     opacity: 0.0;
 }
 
