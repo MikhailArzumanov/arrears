@@ -6,7 +6,7 @@ import { getValueById } from "../-functions/valById.js";
 import { AuthData } from "../-models/auth-data.model.js";
 import { AuthorizedService } from "../-services/-base-services/authorized.service.js";
 import { ErrorsService } from "../-services/-base-services/errors.service.js";
-import { DepartmentsService } from "../-services/department.service.js";
+import { DepartmentsService } from "../-services/departments.service.js";
 import { FacultiesService } from "../-services/faculties.service.js";
 
 let authorizedType;
