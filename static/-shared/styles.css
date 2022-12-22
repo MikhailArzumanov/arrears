@@ -4,3 +4,10 @@ select{
     border-left: 2px solid gray;
     border-top: 2px solid gray;
 }
+
+button{
+    background: white;
+    border: 1px solid black;
+    padding: 3px 12px;
+    border-radius: 2px;
+}
