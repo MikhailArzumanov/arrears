@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Институты</title>
+        <link rel="stylesheet" href="/faculties/faculties.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/faculties"></links-panel>
+        <faculties-panel currentLink="/faculties"></faculties-panel>
+		<script src="/faculties/faculties.js" type="module"></script>
+    </body>
+</html>

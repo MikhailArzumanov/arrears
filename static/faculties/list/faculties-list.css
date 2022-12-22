@@ -1,0 +1,44 @@
+body{
+    background: white;
+    padding: 0;
+    margin: 0;
+    border: none;
+    transition: opacity, 1s; 
+    opacity: 0.0;
+}
+
+#facultiesTable{
+    border: 1px solid black;
+    width: 380px;
+    margin: auto;
+    margin-top: 23px;
+}
+
+#facultiesTable th{
+    border: 1px solid black;
+}
+
+#facultiesTable td{
+    border: 1px solid black;
+    text-align: center;
+}
+
+.idCol{
+    padding: 2px 7px;
+}
+
+.nameCol{
+    padding: 2px 7px;
+}
+
+.redactCol{
+    width: 112px;
+}
+
+.deleteCol{
+    width: 48px;
+}
+
+.additionButton{
+    width: 100%;
+}
