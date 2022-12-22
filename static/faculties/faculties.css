@@ -6,15 +6,3 @@ body{
     transition: opacity, 1s; 
     opacity: 0.0;
 }
-
-#facultiesTable{
-    border: 1px solid black;
-}
-
-#facultiesTable td{
-    border: 1px solid black;
-}
-
-#facultiesTable td{
-    border: 1px solid black;
-}

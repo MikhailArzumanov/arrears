@@ -78,7 +78,7 @@ async function addFaculty(){
     let response = await FacultiesService.addFaculty(faculty);
     if(response == null) showError(ErrorsService.getLastError(), errorBar);
     else{
-        let tr = getTableRow(response.id, response.name);
+        let tr = getTableRow(response.id, response.shortName);
         table.removeChild(additionRow);
         table.appendChild(tr);
         table.appendChild(additionRow);
