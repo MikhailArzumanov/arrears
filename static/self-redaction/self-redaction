@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Страница редактирования</title>
+        <link rel="stylesheet" href="/self-redaction/self-redaction.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body>
+        <links-panel actualRef="/"></links-panel>
+        <table id="redactionForm">
+            <tr><td colspan="2"><p id="redacting">Вы редактируете запись '</p></td></tr>
+            <tr><td colspan="2"><hr style="width: 70%; margin: auto"/><br/></td></tr>
+            <tr><td>Новый логин:         </td><td><input id="loginField" type="text" placeholder="..." />         </td></tr>
+            <tr><td>Новый пароль:        </td><td><input id="passwordField" type="password" placeholder="..." />  </td></tr>
+            <tr><td>Подтверждение пароля:</td><td><input id="passRepeatField" type="password" placeholder="..." /></td></tr>
+            <tr><td colspan="2"><p id="annotation">Для редактирования других данных<br/></p></td></tr>
+            <tr><td>Старый логин:        </td><td><input id="oldLoginField" type="text" placeholder="..." />       </td></tr>
+            <tr><td>Старый пароль:       </td><td><input id="oldPasswordField" type="password" placeholder="..." /></td></tr>
+            <tr><td><button id="confirmBtn">Сохранить</button></td></tr>
+        </table>
+        <error-bar></error-bar>
+        <script src="/self-redaction/self-redaction.js" type="module"></script>
+    </body>
+</html>
