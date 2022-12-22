@@ -36,6 +36,9 @@ async function login(){
         case 'magister':
             console.log('Magister login attemption');
             break;
+        case 'group':
+            console.log('Group login attemption');
+            break;
         case 'department':
             console.log('Department login attemption');
             response = await DepartmentsService.login(login, password);
