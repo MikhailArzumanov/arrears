@@ -1,0 +1,16 @@
+.errorBar{
+    height: 40px;
+    display: block;
+    border: 1px solid black;
+    border-radius: 7px;
+    background: white;
+    color: black;
+    font-family: Helvetica;
+    padding-top: 23px;
+    text-align: center;
+    position: fixed;
+    top: 87vh;
+    /*left: calc(50% - 400px/2);*/
+    font-size: 16px;
+    transition: opacity, 0.4s;
+}
