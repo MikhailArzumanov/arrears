@@ -6,12 +6,13 @@ import { redirect } from "../../-functions/redirect.js";
 export class LinksPanelComponent extends HTMLElement{
 
     links = [
-        new Link('/faculties',      'Институты',        ['admin']),
-        new Link('/departments',    'Кафедры',          ['admin', 'faculty']),
-        new Link('/groups',         'Группы',           ['admin', 'faculty', 'department']),
-        new Link('/students',       'Студенты',         ['admin', 'faculty', 'department', 'group']),
-        new Link('/disciplines',    'Дисциплины',       ['admin', 'faculty', 'department']),
-        new Link('/arrears',        'Листы',   ['admin', 'faculty', 'department', 'group', 'magister', 'student']),
+        new Link('/faculties',    'Институты',  ['admin']),
+        new Link('/',             'Главная',    ['faculty', 'department', 'group', 'magister', 'student']),
+        new Link('/departments',  'Кафедры',    ['admin', 'faculty']),
+        new Link('/groups',       'Группы',     ['admin', 'faculty', 'department']),
+        new Link('/students',     'Студенты',   ['admin', 'faculty', 'department', 'group']),
+        new Link('/disciplines',  'Дисциплины', ['admin', 'faculty', 'department']),
+        new Link('/arrears',      'Листы',      ['admin', 'faculty', 'department', 'group', 'magister', 'student']),
     ];
 
     constructor(){
