@@ -13,21 +13,21 @@ function init(){
     let annotation = "'";
     switch(type){
         case "group":
-            annotation += "Группа ";
+            annotation = "Группа '";
         case "faculty":
         case "department":
-            annotation += data.name;
+            annotation += data.name +"' ";
             break;
         case "magister":
         case "student":
-            annotation = `${data.surname} ${data.name} ${data.patronymicName}`;
+            annotation = `${data.surname} ${data.name} ${data.patronymicName} `;
             break;
         case "admin":
             annotation = 'администратор'
     } 
 
     let paragraph = document.getElementById('annotation');
-    paragraph.innerHTML += annotation +"' ";
+    paragraph.innerHTML += annotation;
     if(type != 'admin'){
         let link = document.createElement('a');
         link.href = '/self-redaction';
