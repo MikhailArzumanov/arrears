@@ -3,6 +3,7 @@ import { redirect } from "../-functions/redirect.js";
 import { FacultiesService } from "../-services/faculties.service.js";
 //import { ErrorsService } from "../-services/-base-services/errors.service.js";
 import { TokensService } from "../-services/-base-services/tokens.service.js";
+import { showError } from "../-functions/showError.js";
 
 
 fadeIn();
@@ -17,9 +18,6 @@ function getValById(id){
     return element.value;
 }
 
-function showError(error){
-    errorBar.show(error, 4800, 400);
-}
 
 async function login(){
     let login    = getValById('loginField');
@@ -44,7 +42,7 @@ async function login(){
             response = await FacultiesService.login(login, password);
             break;
         default:
-            showError("Ошибка типа авторизации");
+            showError("Ошибка типа авторизации", errorBar);
     }
 
     if(response == null){

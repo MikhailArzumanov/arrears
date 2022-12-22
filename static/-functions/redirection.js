@@ -1,6 +1,6 @@
 import { AuthorizedService } from "../-services/-base-services/authorized.service.js";
 
-const ADDRESS = "http://localhost"
+export const ADDRESS = "http://localhost"
 
 export function redirectIfIsntAuthorized(){
     if(!AuthorizedService.isAuthorized()){
