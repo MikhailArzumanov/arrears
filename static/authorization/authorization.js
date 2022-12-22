@@ -4,6 +4,7 @@ import { FacultiesService } from "../-services/faculties.service.js";
 //import { ErrorsService } from "../-services/-base-services/errors.service.js";
 import { TokensService } from "../-services/-base-services/tokens.service.js";
 import { showError } from "../-functions/showError.js";
+import { DepartmentsService } from "../-services/department.service.js";
 
 
 fadeIn();
@@ -37,6 +38,7 @@ async function login(){
             break;
         case 'department':
             console.log('Department login attemption');
+            response = await DepartmentsService.login(login, password);
             break;
         case 'faculty':
             console.log('Faculty login attemption');
