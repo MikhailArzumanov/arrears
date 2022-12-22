@@ -10,7 +10,7 @@ setTimeout(fadeIn,400);
 function init(){
     let type = AuthorizedService.getAuthorizedType;
     let data = AuthorizedService.getAuthorizedData;
-    let annotation = "";
+    let annotation = "'";
     switch(type){
         case "group":
             annotation += "Группа ";
@@ -27,7 +27,7 @@ function init(){
     } 
 
     let paragraph = document.getElementById('annotation');
-    paragraph.innerHTML += annotation +' ';
+    paragraph.innerHTML += annotation +"' ";
     if(type != 'admin'){
         let link = document.createElement('a');
         link.href = '/self-redaction';
