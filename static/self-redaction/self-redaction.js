@@ -6,6 +6,7 @@ import { getValueById } from "../-functions/valById.js";
 import { AuthData } from "../-models/auth-data.model.js";
 import { AuthorizedService } from "../-services/-base-services/authorized.service.js";
 import { ErrorsService } from "../-services/-base-services/errors.service.js";
+import { DepartmentsService } from "../-services/department.service.js";
 import { FacultiesService } from "../-services/faculties.service.js";
 
 let authorizedType;
@@ -81,6 +82,7 @@ async function confirm(){
             response = await FacultiesService.selfRedact(newAuthData, oldAuthData);
             break;
         case "department":
+            response = await DepartmentsService.selfRedact(newAuthData, oldAuthData);
             break;
         case "group":
             
