@@ -1,9 +1,11 @@
 import { fadeIn } from "./-functions/fade.js";
+import { redirect } from "./-functions/redirect.js";
 import { redirectIfIsntAuthorized } from "./-functions/redirection.js";
 import { AuthorizedService } from "./-services/-base-services/authorized.service.js";
+
 redirectIfIsntAuthorized();
-setTimeout(fadeIn,400);
 init();
+setTimeout(fadeIn,400);
 
 function init(){
     let type = AuthorizedService.getAuthorizedType;
@@ -25,7 +27,14 @@ function init(){
     } 
 
     let paragraph = document.getElementById('annotation');
-    paragraph.innerHTML += annotation;
-    if(type != 'admin') 
-        paragraph.innerHTML += ' <a href="/self-redaction">(редактировать запись)</a>'
+    paragraph.innerHTML += annotation +' ';
+    if(type != 'admin'){
+        let link = document.createElement('a');
+        link.href = '/self-redaction';
+        link.innerHTML = '(редактировать запись)';
+        link.onclick = ()=>{
+            redirect('/self-redaction');
+        }
+        paragraph.appendChild(link);
+    }
 }

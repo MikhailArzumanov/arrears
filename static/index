@@ -6,7 +6,7 @@
         <script src="/defining.js" type="module"></script>
     </head>
     <body class="main">
-        <links-panel actualRef="/"></links-panel>
+        <links-panel currentLink="/"></links-panel>
         <div class="textWrapper">
             <p id="annotation">Вы вошли как </p>
         </div>
