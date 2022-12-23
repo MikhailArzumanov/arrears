@@ -1,10 +1,10 @@
 import { http } from '../-http/http.js';
 import { AuthData } from '../-models/auth-data.model.js';
 import {AuthorizedService} from './-base-services/authorized.service.js';
-import { DepartmentRedactionRequest } from './-models/departments/department-redaction-request.model.js';
+import { GroupRedactionRequest } from './-models/groups/group-redaction-request.model.js';
 
-export class DepartmentsService extends AuthorizedService{
-    static CONTROLLER_NAME = 'departments';
+export class GroupsService extends AuthorizedService{
+    static CONTROLLER_NAME = 'groups';
     static CONTROLLER_URL  = this.SERVICE_URL+this.CONTROLLER_NAME;
 
     static async login(login, password){
@@ -18,110 +18,95 @@ export class DepartmentsService extends AuthorizedService{
         return await http.post(url,headers,params,body,false);
     }
 
-    static async getList(facultyId){
+    static async getFirstByDepartment(departmentId){
+        let METHOD_NAME = 'by_department';
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {departmentId: departmentId};
+        return await http.get(url, headers, params, false);
+    }
+
+    static async getList(facultyId, departmentId, searchVal, pageNum, pageSize=20){
         let METHOD_NAME = 'list';
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {facultyId: facultyId};
-        return await http.get(url,headers,params, false);
+        let params = {facultyId: facultyId, departmentId: departmentId, searchVal: searchVal, 
+                      pageNum: pageNum, pageSize: pageSize};
+        return await http.get(url, headers, params, false);
     }
 
     static async getConcrete(id){
-        let METHOD_NAME = 'get';
-        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
+        let METHOD_NAME = '';
+        let url = `${this.CONTROLLER_URL}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {};
+        let params = {authType: this.getAuthorizedType};
         let body = this.getAuthorizationData;
         return await http.post(url,headers,params,body,false);
     }
 
-    static async getFirstByFaculty(facultyId = this.getAuthorizedData.id){
-        let METHOD_NAME = 'by_faculty';   
-        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
-        let headers = this.getTokenHeaders();
-            headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {facultyId: facultyId};
-        return await http.get(url,headers,params,false);
-    }
-
-    static async addDepartment(department){
+    static async addEntry(group){
         let METHOD_NAME = "add";
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {};
-        let body = new DepartmentRedactionRequest(this.getAuthorizationData, department);
+        let params = {authType: this.getAuthorizedType};
+        let body = new GroupRedactionRequest(this.getAuthorizationData, group);
         return await http.post(url,headers,params,body,false);
     }
-    
-    
 
-    static async selfRedact(newAuthData, oldAuthData){
-        let METHOD_NAME = '';
-        let headers = this.getTokenHeaders();
-            headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {authType: this.getAuthorizedType}
-        let departmentData          = this.getAuthorizedData;
-            departmentData.login    = newAuthData.login;
-            departmentData.password = newAuthData.password;
-        let url  = `${this.CONTROLLER_URL}/${departmentData.id}`;
-        let body = new DepartmentRedactionRequest(oldAuthData,departmentData);
-        return await http.put(url,headers,params,body,false);
-    }
-
-    static async redactDepartment(department){
+    static async redactEntry(group){
         let METHOD_NAME = "";
-        let url = `${this.CONTROLLER_URL}/${department.id}`;
+        let url = `${this.CONTROLLER_URL}/${group.id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {authType: this.getAuthorizedType};
-        let body = new DepartmentRedactionRequest(this.getAuthorizationData, department);
+        let body = new GroupRedactionRequest(this.getAuthorizationData, group);
         return await http.put(url,headers,params,body,false);
     }
 
-    static async deleteDepartment(id){
+    static async deleteEntry(id){
         let METHOD_NAME = '';
         let url = `${this.CONTROLLER_URL}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {};
+        let params = {authType: this.getAuthorizedType};
         let body   = this.getAuthorizationData;
         return await http.delete(url,headers,params,body,false);
     }
-    
 
+    static async redactAsAdministrator(group){
+        let METHOD_NAME = "admin";
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${group.id}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {};
+        let body = group;
+        return await http.put(url,headers,params,body,false);
+    }
+    
     static async getConcreteAsAdministrator(id){
-        let METHOD_NAME = '';
-        let url = `${this.CONTROLLER_URL}/${id}`;
+        let METHOD_NAME = 'admin';
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
         return await http.get(url,headers,params,false);
     }
 
-    static async redactAsAdministrator(department){
-        let METHOD_NAME = "admin";
-        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${department.id}`;
-        let headers = this.getTokenHeaders();
-            headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {};
-        let body = department;
-        return await http.put(url,headers,params,body,false);
-    }
-
-    static async addDepartmentAsAdministrator(department){
+    static async addAsAdministrator(group){
         let METHOD_NAME = "admin/add";
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
-        let body = department;
+        let body = group;
         return await http.post(url,headers,params,body,false);
     }
 
-    static async deleteDepartmentAsAdministartor(id){
+    static async deleteAsAdministartor(id){
         let METHOD_NAME = 'admin';
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
         let headers = this.getTokenHeaders();
