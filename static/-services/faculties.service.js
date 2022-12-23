@@ -41,8 +41,8 @@ export class FacultiesService extends AuthorizedService{
     }
 
     static async getConcrete(id){
-        let METHOD_NAME = '';
-        let url = `${this.CONTROLLER_URL}/${id}`;
+        let METHOD_NAME = 'admin';
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
@@ -75,7 +75,8 @@ export class FacultiesService extends AuthorizedService{
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
-        return await http.delete(url,headers,params, false);
+        let body = null;
+        return await http.delete(url,headers,params,body,false);
     }
 
 }

@@ -118,7 +118,10 @@ async function init(){
         //setTimeout(() => redirect('/departments/list'), 1200);
         return;
     }
-    let response = await DepartmentsService.getConcrete(id);
+    let response;
+    if(authType == "admin")
+        response = await DepartmentsService.getConcreteAsAdministrator(id);
+    else response = await DepartmentsService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
     fillFields(response);
     let saveButton = document.getElementById('saveButton');

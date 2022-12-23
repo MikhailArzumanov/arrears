@@ -28,11 +28,21 @@ export class DepartmentsService extends AuthorizedService{
     }
 
     static async getConcrete(id){
-        let METHOD_NAME = '';
-        let url = `${this.CONTROLLER_URL}/${id}`;
+        let METHOD_NAME = 'get';
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
+        let body = this.getAuthorizationData;
+        return await http.post(url,headers,params,body,false);
+    }
+
+    static async getFirstByFaculty(){
+        let METHOD_NAME = 'by_faculty';   
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {facultyId: this.getAuthorizedData.id};
         return await http.get(url,headers,params,false);
     }
 
@@ -72,13 +82,23 @@ export class DepartmentsService extends AuthorizedService{
     }
 
     static async deleteDepartment(id){
-        let METHOD_NAME = 'delete';
-        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${id}`;
+        let METHOD_NAME = '';
+        let url = `${this.CONTROLLER_URL}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
         let body   = this.getAuthorizationData;
-        return await http.post(url,headers,params,body,false);
+        return await http.delete(url,headers,params,body,false);
+    }
+    
+
+    static async getConcreteAsAdministrator(id){
+        let METHOD_NAME = '';
+        let url = `${this.CONTROLLER_URL}/${id}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {};
+        return await http.get(url,headers,params,false);
     }
 
     static async redactAsAdministrator(department){
@@ -107,6 +127,7 @@ export class DepartmentsService extends AuthorizedService{
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
-        return await http.delete(url,headers,params, false);
+        let body = null;
+        return await http.delete(url,headers,params,body,false);
     }
 }
