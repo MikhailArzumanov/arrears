@@ -10,6 +10,7 @@ export class LinksPanelComponent extends HTMLElement{
         new Link('/faculties',    'Институты',    ['admin']),
         new Link('/departments',  'Кафедры',      ['admin', 'faculty']),
         new Link('/groups',       'Группы',       ['admin', 'faculty', 'department']),
+        new Link('/magisters',    'Преподаватели',['admin', 'faculty', 'department']),
         new Link('/students',     'Студенты',     ['admin', 'faculty', 'department', 'group']),
         new Link('/disciplines',  'Дисциплины',   ['admin', 'faculty', 'department']),
         new Link('/arrears',      'Листы',        ['admin', 'faculty', 'department', 'group', 'magister', 'student']),
