@@ -1,0 +1,43 @@
+.groupsPanel{
+    width: 100%;
+    height: 48px;
+    padding-top: 23px;
+    font-size: 34px;
+    font-family: Tahoma;
+    background: white;
+    border: 1px solid black;
+    border-left: none;
+    border-right: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 1766px) {
+    .groupsPanel{
+        height: 34px;
+        padding-top: 16px;
+        font-size: 23px;
+    }
+}
+@media (max-width: 1234px) {
+    .groupsPanel{
+        height: 23px;
+        padding-top: 12px;
+        font-size: 16px;
+    }
+}
+@media (max-width: 848px) {
+    .groupsPanel{
+        height: 16px;
+        padding-top: 7px;
+        font-size: 12px;
+    }
+}
+@media (max-width: 599px) {
+    .groupsPanel{
+        height: 12px;
+        padding-top: 5px;
+        font-size: 7px;
+    }
+}

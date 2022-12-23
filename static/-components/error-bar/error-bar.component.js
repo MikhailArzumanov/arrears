@@ -9,6 +9,7 @@ export class ErrorBarComponent extends HTMLElement{
     }
 
     show(message, duration, width){
+        this.style.visibility = "visible";
         this.innerHTML = message;
         this.style.width = `${width}px`;
         this.style.left = `calc(50% - ${width}px/2`;
@@ -24,7 +25,7 @@ export class ErrorBarComponent extends HTMLElement{
 
     hide(){
         this.style.opacity = "0.0";
-        this.innerHtml = "";
+        this.style.visibility = "hidden";
     }
 
     onClick(){

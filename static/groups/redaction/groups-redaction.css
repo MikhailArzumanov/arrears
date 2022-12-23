@@ -1,0 +1,22 @@
+body{
+    background: white;
+    padding: 0;
+    margin: 0;
+    border: none;
+    transition: opacity, 1s; 
+    opacity: 0.0;
+}
+
+.groupRedactionForm{
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 7px;
+    width: 270px;
+    margin: auto;
+    margin-top: 23px;
+}
+
+#nameField {
+    margin-top: 4px;
+    height: 70px;
+}
