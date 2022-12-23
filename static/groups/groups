@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Кафедры</title>
+        <link rel="stylesheet" href="/groups/groups.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/groups"></links-panel>
+        <groups-panel currentLink="/groups"></groups-panel>
+		<script src="/groups/groups.js" type="module"></script>
+    </body>
+</html>
