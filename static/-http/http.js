@@ -84,8 +84,8 @@ export class http{
         }
         return null
     }
-    static async delete(url, headers = {}, params = {}, plain = false){
-        const response = await this.baseRequest(url, 'DELETE', headers, params)
+    static async delete(url, headers = {}, params = {}, body = null, plain = false){
+        const response = await this.baseRequest(url, 'DELETE', headers, params, body)
         if(response.ok == true){
             const data = plain? await response.text() : await response.json();
             //console.log('DELETE:', data);
