@@ -36,6 +36,6 @@ namespace arrearsApi5_0{
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls(/*"http://%%%IP%%%:1314",*/ "http://localhost:1314");
+                .UseUrls(/*"http://%%%IP%%%:1380",*/ "http://localhost:1380");
     }
 }
