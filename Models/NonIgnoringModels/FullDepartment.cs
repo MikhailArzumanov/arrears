@@ -14,5 +14,6 @@ namespace arrearsApi5_0.Models{
         public Faculty Faculty { get; set; }
         public int FacultyId { get; set; }
         public Department toDefault() => new Department { Id = Id, Login = Login, Password = Password, Name = Name, ShortName = ShortName, Faculty = Faculty, FacultyId = FacultyId };
+        public static FullDepartment fromDefault(Department d) => new FullDepartment { Id = d.Id, Login = d.Login, Password = d.Password, Name = d.Name, ShortName = d.ShortName, Faculty = d.Faculty, FacultyId = d.FacultyId };
     }
 }

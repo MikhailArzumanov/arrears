@@ -13,5 +13,6 @@ namespace arrearsApi5_0.Models{
         public int DepartmentId { get; set; }
         public ICollection<Discipline> Disciplines { get; set; } = new List<Discipline>();
         public Group toDefault() => new Group { Id = Id, Login = Login, Password = Password, Name = Name, Department = Department, DepartmentId = DepartmentId };
+        public static FullGroup fromDefault(Group d) => new FullGroup { Id = d.Id, Login = d.Login, Password = d.Password, Name = d.Name, Department = d.Department, DepartmentId = d.DepartmentId };
     }
 }

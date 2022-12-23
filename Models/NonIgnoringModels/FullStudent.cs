@@ -14,6 +14,7 @@ namespace arrearsApi5_0.Models{
         public Group Group { get; set; }
         public int GroupId { get; set; }
         public Student toDefault() => new Student { Id = Id, Login = Login, Password = Password, Surname = Surname, Name = Name, PatronymicName = PatronymicName, Group = Group, GroupId = GroupId };
+        public static FullStudent fromDefault(Student d) => new FullStudent { Id = d.Id, Login = d.Login, Password = d.Password, Surname = d.Surname, Name = d.Name, PatronymicName = d.PatronymicName, Group = d.Group, GroupId = d.GroupId };
 
     }
 }
