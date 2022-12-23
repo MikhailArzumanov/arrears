@@ -8,13 +8,13 @@ using arrearsApi5_0.Models;
 namespace arrearsApi5_0.Utils{
     public class AuthValidation {
 
-        public static bool isAuthValid(Group group, AuthData authData, string authType) {
+        public static bool isAuthValid(Group group, AuthData authData, string authType, bool selfRedaction = false) {
             var login = authData.Login;
             var password = PasswordHasher.Hash(authData.Password);
             switch (authType) {
                 case "group":
                     if (group.Login != login || group.Password != password)
-                        return false;
+                        return selfRedaction;
                     break;
                 case "department":
                     if (group.Department.Login != login || group.Department.Password != password)
@@ -29,14 +29,14 @@ namespace arrearsApi5_0.Utils{
             }
             return true;
         }
-
-        public static bool isAuthValid(Department department, AuthData authData, string authType){
+        
+        public static bool isAuthValid(Department department, AuthData authData, string authType, bool selfRedaction = false){
             var login = authData.Login;
             var password = PasswordHasher.Hash(authData.Password);
             switch (authType) {
                 case "department":
                     if (department.Login != login || department.Password != password)
-                        return false;
+                        return selfRedaction;
                     break;
                 case "faculty":
                     if (department.Faculty.Login != login || department.Faculty.Password != password)
@@ -46,6 +46,11 @@ namespace arrearsApi5_0.Utils{
                     return false;
             }
             return true;
+        }
+        public static bool isAuthValid(Faculty faculty, AuthData authData){
+            var login = authData.Login;
+            var password = PasswordHasher.Hash(authData.Password);
+            return faculty.Login == login && faculty.Password == password;
         }
 
     }

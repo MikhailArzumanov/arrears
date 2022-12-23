@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
 using arrearsApi5_0.Data;
+using arrearsApi5_0.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace arrearsApi5_0.Controllers{
@@ -16,6 +17,8 @@ namespace arrearsApi5_0.Controllers{
     public class FacultiesController : ControllerBase {
         private ApplicationContext db;
         private IConfiguration config;
+
+        const string AUTH_ERROR = "Авторизационные данные некорректны.";
 
         public FacultiesController(ApplicationContext context, IConfiguration config) {
             this.db = context;
@@ -42,14 +45,14 @@ namespace arrearsApi5_0.Controllers{
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] FacultyRedactionRequest request){
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
             if (previous == null) return NotFound("Институт с заданным идентификатором не найден.");
+            var login = request.authData.Login;
+            var password = PasswordHasher.Hash(request.authData.Password);
+            if (!AuthValidation.isAuthValid(previous,request.authData))
+                return BadRequest(AUTH_ERROR);
             var intersection = db.Faculties.FirstOrDefault(x => x.Id != previous.Id && x.Login == request.facultyData.Login);
             if (intersection != null) return BadRequest("Логин занят.");
-            var login = request.authData.Login;
-            var password = Utils.PasswordHasher.Hash(request.authData.Password);
-            if (previous.Login != login || previous.Password != password)
-                return BadRequest("Авторизационные данные некорректны.");
             previous.Login     = request.facultyData.Login;
-            previous.Password  = Utils.PasswordHasher.Hash(request.facultyData.Password);
+            previous.Password  = PasswordHasher.Hash(request.facultyData.Password);
             //previous.Name      = request.facultyData.Name;
             //previous.ShortName = request.facultyData.ShortName;
             db.Faculties.Update(previous);
