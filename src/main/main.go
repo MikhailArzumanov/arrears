@@ -67,6 +67,14 @@ var proxyMap map[string]string = make(map[string]string)
 
 func initProxymap() {
 	proxyMap["/"] = "/index"
+	proxyMap["/authorization"] = "/authorization/authorization"
+	proxyMap["/self-redaction"] = "/self-redaction/self-redaction"
+	proxyMap["/faculties"] = "/faculties/faculties"
+	proxyMap["/faculties/list"] = "/faculties/list/faculties-list"
+	proxyMap["/faculties/redaction"] = "/faculties/redaction/faculties-redaction"
+	proxyMap["/departments"] = "/departments/departments"
+	proxyMap["/departments/list"] = "/departments/list/departments-list"
+	proxyMap["/departments/redaction"] = "/departments/redaction/departments-redaction"
 }
 
 /////////////////////////////////////////////////////////
@@ -181,11 +189,12 @@ func main() {
 		}
 
 	*/
-	go func() {
-		http.ListenAndServe(HTTP_PORT, http.HandlerFunc(redirectHandler))
-	}()
-
+	/*
+		go func() {
+			http.ListenAndServe(HTTP_PORT, http.HandlerFunc(redirectHandler))
+		}()
+	*/
 	http.HandleFunc("/", handler)
-	//http.ListenAndServe(HTTP_PORT, nil)
-	http.ListenAndServeTLS(HTTPS_PORT, "../../https/localhost.crt", "../../https/localhost.key", nil)
+	http.ListenAndServe(HTTP_PORT, nil)
+	//http.ListenAndServeTLS(HTTPS_PORT, "../../https/localhost.crt", "../../https/localhost.key", nil)
 }
