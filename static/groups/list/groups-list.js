@@ -40,6 +40,7 @@ async function getDepartmentId(){
 async function addGroup(){
     console.log('addition attempt');
     let departmentId = await getDepartmentId();
+    if(departmentId == null) return;
     let group = new Group(null,'','','%%%', departmentId);
     let response;
     if(type == "admin")
@@ -130,7 +131,7 @@ function createAdditionRow(){
     additionCol.setAttribute('colspan','6');
     let additionButton = document.createElement('button');
     additionButton.onclick = addGroup;
-    additionButton.innerHTML = 'Добавить кафедру';
+    additionButton.innerHTML = 'Добавить группу';
     additionButton.setAttribute('class', 'additionButton');
     additionCol.appendChild(additionButton);
     additionRow.appendChild(additionCol);

@@ -5,8 +5,8 @@ import { Link } from "../../../-components/-models/link.model.js";
 export class GroupsPanelComponent extends HTMLElement{
 
     links = [
-        new Link('/groups/list',      'Список',        ['admin','faculty']),
-        new Link('/groups/redaction', 'Редактировать', ['admin','faculty']),
+        new Link('/groups/list',      'Список',        ['admin','faculty','department']),
+        new Link('/groups/redaction', 'Редактировать', ['admin','faculty','department']),
     ];
 
     constructor(){
