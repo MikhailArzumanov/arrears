@@ -23,7 +23,10 @@ async function deleteDepartment(event){
     let name = element.getAttribute('departmentName');
     let answer = confirm(`Вы уверены, что хотите удалить ${name}?`);
     if(!answer) return;
-    let response = await DepartmentsService.deleteDepartment(id);
+    let response;
+    if(type == "admin")
+        response = await DepartmentsService.deleteDepartmentAsAdministartor(id);
+    else response = await DepartmentsService.deleteDepartment(id);
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
@@ -90,13 +93,9 @@ async function addDepartment(){
     let facultyId = getFacultyId();
     let department = new Department(null,'','','%%%','%', facultyId);
     let response;
-    switch(type){
-        case 'faculty':
-            response = await DepartmentsService.addDepartment(department);
-            break;
-        case 'admin':
-            response = await DepartmentsService.addDepartmentAsAdministrator(department);
-    }
+    if(type == "admin")
+        response = await DepartmentsService.addDepartmentAsAdministrator(department);
+    else response = await DepartmentsService.addDepartment(department);
     if(response == null) showError(ErrorsService.getLastError(), errorBar);
     else{
         let tr = getTableRow(response.id, response.shortName, response.faculty.shortName);

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Редактирование</title>
+        <link rel="stylesheet" href="/departments/redaction/departments-redaction.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/departments"></links-panel>
+        <departments-panel currentLink="/departments/redaction"></departments-panel>
+        <table class="departmentRedactionForm">
+            <tr><td class="labelCol">Id: </td><td class="fieldCol"><input id="idField" value="0" type="text" disabled/></td></tr>
+            <tr><td>Институт: </td><td><select id="facultyField"></select><td></tr>
+            <tr><td class="labelCol">Сокращение: </td><td class="fieldCol"><input id="shortNameField" type="text" value=""/></td></tr>
+            <tr><td class="textareaCol" colspan="2">Имя: <br/><textarea id="nameField"></textarea></td></tr>
+            <tr><td><br/></td></tr>
+            <tr><td class="labelCol">Логин: </td><td class="fieldCol"><input id="loginField" type="text" value=""/></td></tr>
+            <tr><td class="labelCol">Пароль: </td><td class="fieldCol"><input id="passwordField" type="password" value=""/></td></tr>
+            <tr><td><button id="saveButton">Сохранить</button></td><td><button id="deleteButton">Удалить</button></td></tr>
+        </table>
+		<script src="/departments/redaction/departments-redaction.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>
