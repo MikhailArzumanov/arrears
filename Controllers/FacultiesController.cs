@@ -31,7 +31,7 @@ namespace arrearsApi5_0.Controllers{
             var password = Utils.PasswordHasher.Hash(data.Password);
             var entry = db.Faculties.FirstOrDefault(x => x.Login == login && x.Password == password);
             if (entry == null) return NotFound("Институт с заданным авторизационными данными отсутствует.");
-            var token = Utils.TokenHandler.BuildToken(new string[] { "faculty" }, config);
+            var token = TokenHandler.BuildToken(new string[] { "faculty" }, config);
             return Ok(new { token = token, authData = data, type="faculty", faculty=entry });
         }
 
@@ -45,8 +45,6 @@ namespace arrearsApi5_0.Controllers{
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] FacultyRedactionRequest request){
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
             if (previous == null) return NotFound("Институт с заданным идентификатором не найден.");
-            var login = request.authData.Login;
-            var password = PasswordHasher.Hash(request.authData.Password);
             if (!AuthValidation.isAuthValid(previous,request.authData))
                 return BadRequest(AUTH_ERROR);
             var intersection = db.Faculties.FirstOrDefault(x => x.Id != previous.Id && x.Login == request.facultyData.Login);
@@ -71,7 +69,7 @@ namespace arrearsApi5_0.Controllers{
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
             if (previous == null) return NotFound("Институт с заданным идентификатором не найден.");
             previous.Login     = request.Login;
-            previous.Password  = Utils.PasswordHasher.Hash(request.Password);
+            previous.Password  = PasswordHasher.Hash(request.Password);
             previous.Name      = request.Name;
             previous.ShortName = request.ShortName;
             db.Faculties.Update(previous);
