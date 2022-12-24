@@ -45,8 +45,10 @@ async function save(){
 }
 
 async function deleteEntry(){
-    let name = getValueById('nameField');
-    let answer = confirm(`Вы уверены, что хотите удалить ${name}?`);
+    let surname        = getValueById('surnameField');
+    let name           = getValueById('nameField');
+    let patronymicName = getValueById('patronymicNameField');
+    let answer = confirm(`Вы уверены, что хотите удалить запись '${surname} ${name} ${patronymicName}'?`);
     if(!answer) return;
     let response;
     if(authType == "admin") 

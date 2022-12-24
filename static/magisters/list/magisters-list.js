@@ -70,8 +70,8 @@ function redactMagisterHandler(event){
 async function deleteMagister(event){
     let element = event.currentTarget;
     let id = element.getAttribute('magisterId');
-    let name = element.getAttribute('magisterName');
-    let answer = confirm(`Вы уверены, что хотите удалить ${name}?`);
+    let fullName = element.getAttribute('magisterFullName');
+    let answer = confirm(`Вы уверены, что хотите удалить запись '${fullName}'?`);
     if(!answer) return;
     let response;
     if(type == "admin")
@@ -103,7 +103,7 @@ function getTableRow(id, surname, name, patronymicName, departmentName, facultyN
     let deleteButton = document.createElement('button');
     deleteButton.innerHTML = 'Удалить';
     deleteButton.setAttribute('magisterId', id);
-    deleteButton.setAttribute('magisterName', name);
+    deleteButton.setAttribute('magisterFullName', `${surname} ${name} ${patronymicName}`);
     deleteButton.onclick = deleteMagister;
     
     idCol.innerHTML             = id;
