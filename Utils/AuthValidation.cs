@@ -37,7 +37,7 @@ namespace arrearsApi5_0.Utils{
             var login = authData.Login;
             var password = PasswordHasher.Hash(authData.Password);
             switch (authType) {
-                case "group":
+                case "magister":
                     if (magister.Login != login || magister.Password != password)
                         return selfRedaction;
                     break;
