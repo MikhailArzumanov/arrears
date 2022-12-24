@@ -2,17 +2,19 @@ import { fadeIn } from "../../-functions/fade.js";
 import { redirect } from "../../-functions/redirect.js";
 import { showError } from "../../-functions/showError.js";
 import { getValueById } from "../../-functions/valById.js";
-import { Magister } from "../../-models/magister.model.js";
+import { Student } from "../../-models/student.model.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
 import { ErrorsService } from "../../-services/-base-services/errors.service.js";
 import { DepartmentsService } from "../../-services/departments.service.js";
 import { FacultiesService } from "../../-services/faculties.service.js";
-import { MagistersService } from "../../-services/magisters.service.js";
+import { GroupsService } from "../../-services/groups.service.js";
+import { StudentsService } from "../../-services/students.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
-const ADDITION_BUTTON_ANNOTATION = 'Добавить преподавателя';
+
+const ADDITION_BUTTON_ANNOTATION = 'Добавить студента';
 
 let pageNum = 1;
 let table;
@@ -22,69 +24,81 @@ let additionRow;
 let errorBar;
 
 
-async function getDepartmentId(){
-    let depFieldVal = getValueById('departmentField');
-    if(depFieldVal != 0) return depFieldVal;
-    
+async function getGroupId(){
+    let groupFieldVal = getValueById('groupField');
+    if(groupFieldVal != 0) return groupFieldVal;
+    let departmentId = authorizedData?.department?.id;
+    let response;
     switch(type){
         case 'admin':
         case 'faculty':
-            let facultyFieldVal = getValueById('facultyField');
-            let facultyId = facultyFieldVal != 0 ? facultyFieldVal : 1
-            let response = await DepartmentsService.getFirstByFaculty(facultyId);
+            let departmentFieldVal = getValueById('departmentField');
+            if(departmentFieldVal == 0){
+                let facultyFieldVal = getValueById('facultyField');
+                let facultyId = facultyFieldVal != 0 ? facultyFieldVal : 1
+                response = await DepartmentsService.getFirstByFaculty(facultyId);
+                if(response == null) {showError(ErrorsService.getLastError(), errorBar); return null;}
+                departmentId = response.id;
+            }
+            else departmentId = departmentFieldVal;
+        case 'department':
+            response = await GroupsService.getFirstByDepartment(departmentId);
             if(response == null) {showError(ErrorsService.getLastError(), errorBar); return null;}
-            return response.id
-        case 'department': return authorizedData.id;
+            return response.id;
+        case 'group':
+            return authorizedData.id;
     }
+    showError('Ошибка типа авторизации', errorBar);
+    return null;
 }
 
 async function addEntry(){
     console.log('addition attempt');
-    let departmentId = await getDepartmentId();
-    if(departmentId == null) return;
-    let magister = new Magister(null,'','','%%%', '%%%', '%%%', departmentId);
+    let groupId = await getGroupId();
+    if(groupId == null) return;
+    let student = new Student(null,'','','%%%', '%%%', '%%%', groupId);
     let response;
     if(type == "admin")
-        response = await MagistersService.addAsAdministrator(magister);
-    else response = await MagistersService.addEntry(magister);
+        response = await StudentsService.addAsAdministrator(student);
+    else response = await StudentsService.addEntry(student);
     if(response == null) showError(ErrorsService.getLastError(), errorBar);
     else{
         let tr = getTableRow(response.id, response.surname, response.name, response.patronymicName, 
-            response.department.shortName, response.department.faculty.shortName);
+            response.group.name, response.group.department.shortName, response.group.department.faculty.shortName);
         table.removeChild(additionRow);
         table.appendChild(tr);
         table.appendChild(additionRow);
     }
 }
 
-function redactMagister(id){
-    sessionStorage.setItem('magisterId', id);
-    redirect('/magisters/redaction');
+function redactStudent(id){
+    sessionStorage.setItem('studentId', id);
+    redirect('/students/redaction');
 }
 
-function redactMagisterHandler(event){
+function redactStudentHandler(event){
     let element = event.currentTarget;
-    let id = element.getAttribute('magisterId');
-    redactMagister(id);
+    let id = element.getAttribute('studentId');
+    redactStudent(id);
 }
 
-async function deleteMagister(event){
+async function deleteStudent(event){
     let element = event.currentTarget;
-    let id = element.getAttribute('magisterId');
-    let fullName = element.getAttribute('magisterFullName');
+    let id = element.getAttribute('studentId');
+    let fullName = element.getAttribute('studentFullName');
     let answer = confirm(`Вы уверены, что хотите удалить запись '${fullName}'?`);
     if(!answer) return;
     let response;
     if(type == "admin")
-        response = await MagistersService.deleteAsAdministartor(id);
-    else response = await MagistersService.deleteEntry(id);
+        response = await StudentsService.deleteAsAdministartor(id);
+    else response = await StudentsService.deleteEntry(id);
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
     console.log(element);
 }
 
-function getTableRow(id, surname, name, patronymicName, departmentName, facultyName){
+function getTableRow(id, surname, name, patronymicName, groupName, departmentName, facultyName){
     let row = document.createElement('tr');
     let idCol             = document.createElement('td');
     let surnameCol        = document.createElement('td');
@@ -92,20 +106,21 @@ function getTableRow(id, surname, name, patronymicName, departmentName, facultyN
     let patronymicNameCol = document.createElement('td');
     let facultyCol        = document.createElement('td');
     let departmentCol     = document.createElement('td');
+    let groupCol          = document.createElement('td');
     let redactCol         = document.createElement('td');
     let deleteCol         = document.createElement('td');
     
-    let cols = [idCol, surnameCol, nameCol, patronymicNameCol, facultyCol, departmentCol, redactCol, deleteCol];
+    let cols = [idCol, surnameCol, nameCol, patronymicNameCol, facultyCol, departmentCol, groupCol, redactCol, deleteCol];
 
     let redactButton = document.createElement('button');
     redactButton.innerHTML = 'Редактировать';
-    redactButton.setAttribute('magisterId', id);
-    redactButton.onclick = redactMagisterHandler;
+    redactButton.setAttribute('studentId', id);
+    redactButton.onclick = redactStudentHandler;
     let deleteButton = document.createElement('button');
     deleteButton.innerHTML = 'Удалить';
-    deleteButton.setAttribute('magisterId', id);
-    deleteButton.setAttribute('magisterFullName', `${surname} ${name} ${patronymicName}`);
-    deleteButton.onclick = deleteMagister;
+    deleteButton.setAttribute('studentId', id);
+    deleteButton.setAttribute('studentFullName', `${surname} ${name} ${patronymicName}`);
+    deleteButton.onclick = deleteStudent;
     
     idCol.innerHTML             = id;
     surnameCol.innerHTML        = surname;
@@ -113,6 +128,7 @@ function getTableRow(id, surname, name, patronymicName, departmentName, facultyN
     patronymicNameCol.innerHTML = patronymicName;
     facultyCol.innerHTML        = facultyName;
     departmentCol.innerHTML     = departmentName;
+    groupCol.innerHTML          = groupName;
     redactCol.appendChild(redactButton);
     deleteCol.appendChild(deleteButton);
 
@@ -120,6 +136,7 @@ function getTableRow(id, surname, name, patronymicName, departmentName, facultyN
     nameCol.setAttribute('class',      'nameCol');
     facultyCol.setAttribute('class',   'facultyCol');
     departmentCol.setAttribute('class','departmentCol');
+    groupCol.setAttribute('class',     'groupCol')
     redactCol.setAttribute('class',    'redactCol');
     deleteCol.setAttribute('class',    'deleteCol');
 
@@ -133,7 +150,7 @@ function createAdditionRow(){
     additionRow = document.createElement('tr');
     additionRow.setAttribute('class', 'additionRow');
     let additionCol = document.createElement('td');
-    additionCol.setAttribute('colspan','8');
+    additionCol.setAttribute('colspan','9');
     let additionButton = document.createElement('button');
     additionButton.onclick = addEntry;
     additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
@@ -143,29 +160,31 @@ function createAdditionRow(){
     table.appendChild(additionRow);
 }
 
-async function loadMagisters(){
+async function loadStudents(){
     let facultyId         = getValueById("facultyField");
     let departmentId      = getValueById("departmentField");
+    let groupId           = getValueById("groupField");
     let surnameVal        = getValueById("surnameField");
     let nameVal           = getValueById("nameField");
     let patronymicNameVal = getValueById("patronymicNameField")
-    let response = await MagistersService.getList(facultyId, departmentId, surnameVal, nameVal, patronymicNameVal, pageNum);
+    let response = await StudentsService.getList(facultyId, departmentId, groupId, surnameVal, nameVal, patronymicNameVal, pageNum);
     return response;
 }
 
 async function fillTable(){    
-    let response = await loadMagisters();
-    let magisters = response.magisters;
+    let response = await loadStudents();
+    let students = response.students;
     setDisable('nextPageBtn', pageNum >= response.pagesAmount);
-    magisters.sort((a, b) => a.id-b.id);
-    for(let magister of magisters){
-        let id             = magister.id;
-        let surname        = magister.surname;
-        let name           = magister.name;
-        let patronymicName = magister.patronymicName;
-        let departmentName = magister.department.shortName;
-        let facultyName    = magister.department.faculty.shortName;
-        let row = getTableRow(id, surname, name, patronymicName, departmentName, facultyName);
+    students.sort((a, b) => a.id-b.id);
+    for(let student of students){
+        let id             = student.id;
+        let surname        = student.surname;
+        let name           = student.name;
+        let patronymicName = student.patronymicName;
+        let groupName      = student.group.name;
+        let departmentName = student.group.department.shortName;
+        let facultyName    = student.group.department.faculty.shortName;
+        let row = getTableRow(id, surname, name, patronymicName, groupName, departmentName, facultyName);
         row.setAttribute('class', 'dataRow');
         table.appendChild(row);
     }
@@ -186,11 +205,17 @@ async function refillTable(){
     await fillTable();
 }
 
-
-function getOptionSN(faculty){
+function getOptionSN(snModel){
     let option = document.createElement('option');
-    option.innerHTML = faculty.shortName;
-    option.value     = faculty.id;
+    option.innerHTML = snModel.shortName;
+    option.value     = snModel.id;
+    return option;
+}
+
+function getOptionN(nModel){
+    let option = document.createElement('option');
+    option.innerHTML = nModel.name;
+    option.value     = nModel.id;
     return option;
 }
 
@@ -214,11 +239,26 @@ function fillSelect(selectId, dataArray, optionFn, nullAnnotation){
     }
 }
 
-async function fillSelects(facultyId){
+async function fillFaculties(){
     let faculties = await FacultiesService.getAll();
-    let departments = await DepartmentsService.getList(facultyId);
     fillSelect("facultyField", faculties, getOptionSN, "Институт...");
+}
+
+async function fillDepartments(facultyId){
+    let departments = await DepartmentsService.getList(facultyId);
     fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
+}
+
+async function fillGroups(facultyId, departmentId){
+    let response = await GroupsService.getList(facultyId, departmentId, '', 0);
+    let groups = response.groups;
+    fillSelect("groupField", groups, getOptionN, "Группа...");
+}
+
+async function fillSelects(facultyId, departmentId){
+    await fillFaculties();
+    await fillDepartments(facultyId);
+    await fillGroups(facultyId, departmentId);
 }
 
 function setDisable(id, value){
@@ -242,46 +282,67 @@ function setOnClick(btnId, handler){
 
 async function selectFacultyOnChange(event){
     let facultyId = event.originalTarget.value;
-    let departments = await DepartmentsService.getList(facultyId);
     clearSelect("departmentField");
-    fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
+    fillDepartments(facultyId);
+    clearSelect("groupField");
+    fillGroups(facultyId,0);
+}
+
+async function selectDepartmentOnChange(event){
+    let departmentId = event.originalTarget.value;
+    clearSelect("groupField");
+    fillGroups(0,departmentId);
 }
 
 async function init(){
-    setOnClick('searchBtn', onSearch);
+    setOnClick('searchBtn',   onSearch);
     setOnClick('nextPageBtn', onNextPage);
     setOnClick('prevPageBtn', onPrevPage);
-    document.getElementById('facultyField').onchange = selectFacultyOnChange
+    document.getElementById('facultyField'   ).onchange = selectFacultyOnChange;
+    document.getElementById('departmentField').onchange = selectDepartmentOnChange;
     type = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
     errorBar = document.getElementsByTagName('error-bar')[0];
-    table = document.getElementById('magistersTable').getElementsByTagName('tbody')[0];
-    let facultyId, departmentId;
+    table = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
+    let facultyId, departmentId, groupId;
     let facultyField    = document.getElementById("facultyField");
     let departmentField = document.getElementById("departmentField");
+    let groupField      = document.getElementById("groupField");
     switch(type){
+        case 'group':
+            facultyId    = authorizedData.department.faculty.id;
+            departmentId = authorizedData.department.id;
+            groupId      = authorizedData.id;
+            facultyField.disabled    = true;
+            departmentField.disabled = true;
+            groupField.disabled      = true;
+            break;
         case 'department':
             facultyId    = authorizedData.faculty.id;
             departmentId = authorizedData.id;
+            groupId      = 0;
             facultyField.disabled    = true;
             departmentField.disabled = true;
             break;
         case 'faculty':
             facultyId    = authorizedData.id;
             departmentId = 0;
+            groupId      = 0;
             facultyField.disabled = true;
             break;
         case 'admin':
             facultyId    = 0;
             departmentId = 0;
+            groupId      = 0;
             break;
         default:
             showError('Ошибка типа авторизации', errorBar);
             return;
     }
-    await fillSelects(facultyId);
+    await fillSelects(facultyId, departmentId);
     facultyField.value    = facultyId;
     departmentField.value = departmentId;
+    groupField.value      = groupId;
     await fillTable();
 }
 

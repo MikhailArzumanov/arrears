@@ -10,6 +10,7 @@ window.onload = init;
 setTimeout(fadeIn, 1200);
 
 
+const ADDITION_BUTTON_ANNOTATION = 'Добавить кафедру';
 
 let table;
 let type;
@@ -111,7 +112,7 @@ function createAdditionRow(){
     additionCol.setAttribute('colspan','5');
     let additionButton = document.createElement('button');
     additionButton.onclick = addDepartment;
-    additionButton.innerHTML = 'Добавить кафедру';
+    additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
     additionButton.setAttribute('class', 'additionButton');
     additionCol.appendChild(additionButton);
     additionRow.appendChild(additionCol);

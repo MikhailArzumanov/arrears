@@ -1,3 +1,6 @@
+export const LIST_LINK_TEXT      = "Список";
+export const REDACTION_LINK_TEXT = "Редактировать";
+
 export class Link{
     href    ;
     text    ;

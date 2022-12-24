@@ -2,16 +2,16 @@ import { AuthorizedService } from "../../../-services/-base-services/authorized.
 import { Link, LIST_LINK_TEXT, REDACTION_LINK_TEXT } from "../../../-components/-models/link.model.js";
 
 
-export class MagistersPanelComponent extends HTMLElement{
+export class StudentsPanelComponent extends HTMLElement{
 
     links = [
-        new Link('/magisters/list',      LIST_LINK_TEXT,      ['admin','faculty','department']),
-        new Link('/magisters/redaction', REDACTION_LINK_TEXT, ['admin','faculty','department']),
+        new Link('/students/list',      LIST_LINK_TEXT,      ['admin','faculty','department','group']),
+        new Link('/students/redaction', REDACTION_LINK_TEXT, ['admin','faculty','department','group']),
     ];
 
     constructor(){
         super();
-        this.setAttribute('class', 'magistersPanel');
+        this.setAttribute('class', 'studentsPanel');
         let currentLink     = this.getAttribute('currentLink');
         let authorizedType  = AuthorizedService.getAuthorizedType;
         if(authorizedType){

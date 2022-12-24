@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Редактирование</title>
+        <link rel="stylesheet" href="/students/redaction/students-redaction.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/students"></links-panel>
+        <students-panel currentLink="/students/redaction"></students-panel>
+        <table class="studentRedactionForm">
+            <tr><td class="labelCol">Id: </td><td class="fieldCol"><input id="idField" value="0" type="text" disabled/></td></tr>
+            <tr><td>Институт: </td><td><select id="facultyField">   </select><td></tr>
+            <tr><td>Кафедра:  </td><td><select id="departmentField"></select><td></tr>
+            <tr><td>Группа:   </td><td><select id="groupField">     </select><td></tr>
+            <tr><td class="labelCol">Фамилия: </td> <td class="fieldCol"><input id="surnameField" type="text"/>       </td></tr>
+            <tr><td class="labelCol">Имя:     </td> <td class="fieldCol"><input id="nameField" type="text"/>          </td></tr>
+            <tr><td class="labelCol">Отчество:</td> <td class="fieldCol"><input id="patronymicNameField" type="text"/></td></tr>
+            <tr><td><br/></td></tr>
+            <tr><td class="labelCol">Логин:  </td><td class="fieldCol"><input id="loginField" type="text" value=""/>       </td></tr>
+            <tr><td class="labelCol">Пароль: </td><td class="fieldCol"><input id="passwordField" type="password" value=""/></td></tr>
+            <tr><td><button id="saveButton">Сохранить</button></td><td><button id="deleteButton">Удалить</button></td></tr>
+        </table>
+		<script src="/students/redaction/students-redaction.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>

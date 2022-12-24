@@ -8,6 +8,8 @@ import { AuthorizedService } from "../-services/-base-services/authorized.servic
 import { ErrorsService } from "../-services/-base-services/errors.service.js";
 import { DepartmentsService } from "../-services/departments.service.js";
 import { FacultiesService } from "../-services/faculties.service.js";
+import { GroupsService } from "../-services/groups.service.js";
+import { MagistersService } from "../-services/magisters.service.js";
 
 let authorizedType;
 let errorBar;
@@ -85,10 +87,10 @@ async function confirm(){
             response = await DepartmentsService.selfRedact(newAuthData, oldAuthData);
             break;
         case "group":
-            
+            response = await GroupsService.selfRedact(newAuthData, oldAuthData);
             break;
         case "magister":
-            
+            response = await MagistersService.selfRedact(newAuthData,oldAuthData);
             break;
         case "student":
             

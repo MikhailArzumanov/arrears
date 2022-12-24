@@ -1,12 +1,12 @@
 import { AuthorizedService } from "../../../-services/-base-services/authorized.service.js";
-import { Link } from "../../../-components/-models/link.model.js";
+import { Link, LIST_LINK_TEXT, REDACTION_LINK_TEXT } from "../../../-components/-models/link.model.js";
 
 
 export class GroupsPanelComponent extends HTMLElement{
 
     links = [
-        new Link('/groups/list',      'Список',        ['admin','faculty','department']),
-        new Link('/groups/redaction', 'Редактировать', ['admin','faculty','department']),
+        new Link('/groups/list',      LIST_LINK_TEXT,      ['admin','faculty','department']),
+        new Link('/groups/redaction', REDACTION_LINK_TEXT, ['admin','faculty','department']),
     ];
 
     constructor(){
