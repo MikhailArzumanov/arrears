@@ -135,7 +135,7 @@ function createAdditionRow(){
     additionCol.setAttribute('colspan','8');
     let additionButton = document.createElement('button');
     additionButton.onclick = addEntry;
-    additionButton.innerHTML = 'Добавить группу';
+    additionButton.innerHTML = 'Добавить преподавателя';
     additionButton.setAttribute('class', 'additionButton');
     additionCol.appendChild(additionButton);
     additionRow.appendChild(additionCol);
