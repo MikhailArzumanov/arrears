@@ -7,7 +7,28 @@ using arrearsApi5_0.Models;
 
 namespace arrearsApi5_0.Utils{
     public class AuthValidation {
-
+        
+        public static bool isAuthValid(Magister magister, AuthData authData, string authType, bool selfRedaction = false) {
+            var login = authData.Login;
+            var password = PasswordHasher.Hash(authData.Password);
+            switch (authType) {
+                case "group":
+                    if (magister.Login != login || magister.Password != password)
+                        return selfRedaction;
+                    break;
+                case "department":
+                    if (magister.Department.Login != login || magister.Department.Password != password)
+                        return false;
+                    break;
+                case "faculty":
+                    if (magister.Department.Faculty.Login != login || magister.Department.Faculty.Password != password)
+                        return false;
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
         public static bool isAuthValid(Group group, AuthData authData, string authType, bool selfRedaction = false) {
             var login = authData.Login;
             var password = PasswordHasher.Hash(authData.Password);
