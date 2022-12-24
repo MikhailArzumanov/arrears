@@ -4,6 +4,7 @@ import { LinksPanelComponent } from "./-components/links-panel/links-panel.compo
 import { DepartmentsPanelComponent } from "./departments/-components/departments-panel/departments-panel.component.js";
 import { FacultiesPanelComponent } from "./faculties/-components/faculties-panel/faculties-panel.component.js";
 import { GroupsPanelComponent } from "./groups/-components/groups-panel/groups-panel.component.js";
+import { MagistersPanelComponent } from "./magisters/-components/magisters-panel/magisters-panel.component.js";
 
 
 let head = document.getElementsByTagName('head')[0];
@@ -26,6 +27,8 @@ customElements.define('departments-panel', DepartmentsPanelComponent);
 addStyles('/departments/-components/departments-panel/departments-panel.component.css');
 customElements.define('groups-panel', GroupsPanelComponent);
 addStyles('/groups/-components/groups-panel/groups-panel.component.css');
+customElements.define('magisters-panel', MagistersPanelComponent);
+addStyles('/magisters/-components/magisters-panel/magisters-panel.component.css');
 
 customElements.define('panel-link', LinkComponent);
 addStyles('/-components/link/link.component.css');

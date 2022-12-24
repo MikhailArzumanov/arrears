@@ -5,6 +5,8 @@ import { FacultiesService } from "../-services/faculties.service.js";
 import { TokensService } from "../-services/-base-services/tokens.service.js";
 import { showError } from "../-functions/showError.js";
 import { DepartmentsService } from "../-services/departments.service.js";
+import { GroupsService } from "../-services/groups.service.js";
+import { MagistersService } from "../-services/magisters.service.js";
 
 
 fadeIn();
@@ -35,9 +37,11 @@ async function login(){
             break;
         case 'magister':
             console.log('Magister login attemption');
+            response = await MagistersService.login(login, password);
             break;
         case 'group':
             console.log('Group login attemption');
+            response = await GroupsService.login(login, password);
             break;
         case 'department':
             console.log('Department login attemption');

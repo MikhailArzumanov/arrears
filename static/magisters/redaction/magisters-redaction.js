@@ -6,7 +6,8 @@ import { ErrorsService } from "../../-services/-base-services/errors.service.js"
 import { FacultiesService } from "../../-services/faculties.service.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
 import { DepartmentsService } from "../../-services/departments.service.js";
-import { Department } from "../../-models/department.model.js";
+import { Magister } from "../../-models/magister.model.js";
+import { MagistersService } from "../../-services/magisters.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
@@ -16,53 +17,57 @@ let errorBar;
 let authType;
 let authorizedData;
 let fieldsNames = [
-    'idField',
-    'facultyField',      
-    'nameField',    
-    'shortNameField',
+    'idField',        
+    'facultyField',   
+    'departmentField',
+    'surnameField',      
+    'nameField',      
+    'patronymicNameField',      
     'loginField',
-    'passwordField',   
-]
-let faculties;
+    'passwordField',     
+];
 
 async function save(){
-    let facultyId = getValueById('facultyField');
-    let name = getValueById('nameField');
-    let shortName = getValueById('shortNameField');
-    let login = getValueById('loginField');
-    let password = getValueById('passwordField');
-    let department = new Department(id,login,password,name,shortName, facultyId);
+    let departmentId   = getValueById('departmentField');
+    let surname        = getValueById('surnameField');
+    let name           = getValueById('nameField');
+    let patronymicName = getValueById('patronymicNameField');
+    let login          = getValueById('loginField');
+    let password       = getValueById('passwordField');
+    let magister = new Magister(id,login,password,surname,name,patronymicName,departmentId);
     let response;
     if(authType == "admin")
-        response = await DepartmentsService.redactAsAdministrator(department);
-    else response = await DepartmentsService.redactDepartment(department);
+        response = await MagistersService.redactAsAdministrator(magister);
+    else response = await MagistersService.redactEntry(magister);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
     console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 
 async function deleteEntry(){
-    let name = getValueById('shortNameField');
+    let name = getValueById('nameField');
     let answer = confirm(`Вы уверены, что хотите удалить ${name}?`);
     if(!answer) return;
     let response;
     if(authType == "admin") 
-        response = await DepartmentsService.deleteDepartmentAsAdministartor(id);
-    else response = await DepartmentsService.deleteDepartment(id);
+        response = await MagistersService.deleteAsAdministartor(id);
+    else response = await MagistersService.deleteEntry(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
     showError('Запись была успешно удалена', errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('departmentId');
-        redirect('/departments/list');
+        redirect('/magisters/list');
     }, 1200)
 }
 
-function fillFields(department){
-    setValueById('idField',         department.id);
-    setValueById('facultyField',    department.faculty.id);
-    setValueById('nameField',       department.name);
-    setValueById('shortNameField',  department.shortName);
-    setValueById('loginField',      department.login);
+function fillFields(magister){
+    setValueById('idField',             magister.id);
+    setValueById('facultyField',        magister.department.faculty.id);
+    setValueById('departmentField',     magister.department.id);
+    setValueById('surnameField',        magister.surname);
+    setValueById('nameField',           magister.name);
+    setValueById('patronymicNameField', magister.patronymicName);
+    setValueById('loginField',          magister.login);
     //setValueById('passwordField', department.password);
 }
 
@@ -76,15 +81,15 @@ function clearFieldsAndDisableControls(){
     document.getElementById('deleteButton').disabled = true;
 }
 
-async function loadFaculties(){
-    faculties = await FacultiesService.getAll();
-}
-
-function getFacultyOption(faculty){
+function getOptionSN(faculty){
     let option = document.createElement('option');
     option.innerHTML = faculty.shortName;
     option.value     = faculty.id;
     return option;
+}
+
+function clearSelect(selectId){
+    document.getElementById(selectId).innerHTML = '';
 }
 
 function fillSelect(selectId, dataArray, optionFn){
@@ -95,34 +100,46 @@ function fillSelect(selectId, dataArray, optionFn){
     }
 }
 
-async function loadAndFillData(){
-    await loadFaculties();
-    fillSelect('facultyField', faculties, getFacultyOption);
+async function loadAndFillData(facultyId){
+    let faculties = await FacultiesService.getAll();
+    fillSelect('facultyField', faculties, getOptionSN);
     switch(authType){
+        case 'department':
+            document.getElementById('departmentField').disabled = true;
         case 'faculty':
             document.getElementById('facultyField').disabled = true;
         case 'admin':
             break;
     }
+    let departments = await DepartmentsService.getList(facultyId);
+    fillSelect('departmentField', departments, getOptionSN);
+}
+
+async function selectFacultyOnChange(event){
+    let facultyId = event.originalTarget.value;
+    let departments = await DepartmentsService.getList(facultyId);
+    clearSelect("departmentField");
+    fillSelect("departmentField", departments, getOptionSN);
 }
 
 async function init(){
+    document.getElementById('facultyField').onchange = selectFacultyOnChange;
     authType       = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
-    await loadAndFillData();
     errorBar = document.getElementsByTagName('error-bar')[0];
-    id = sessionStorage.getItem('departmentId');
+    id = sessionStorage.getItem('magisterId');
     if(id == null) {
         showError('Кафедра не была выбрана', errorBar);
         clearFieldsAndDisableControls();
-        //setTimeout(() => redirect('/departments/list'), 1200);
+        //setTimeout(() => redirect('/magisters/list'), 1200);
         return;
     }
     let response;
     if(authType == "admin")
-        response = await DepartmentsService.getConcreteAsAdministrator(id);
-    else response = await DepartmentsService.getConcrete(id);
+        response = await MagistersService.getConcreteAsAdministrator(id);
+    else response = await MagistersService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
+    await loadAndFillData(response.department.faculty.id);
     fillFields(response);
     let saveButton = document.getElementById('saveButton');
     saveButton.onclick = save;
