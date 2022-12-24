@@ -41,7 +41,7 @@ async function save(){
     showError('Запись была успешно отредактирована', errorBar);
 }
 
-async function deleteFaculty(){
+async function deleteEntry(){
     let name = getValueById('shortNameField');
     let answer = confirm(`Вы уверены, что хотите удалить ${name}?`);
     if(!answer) return;
@@ -127,5 +127,5 @@ async function init(){
     let saveButton = document.getElementById('saveButton');
     saveButton.onclick = save;
     let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteFaculty;
+    deleteButton.onclick = deleteEntry;
 }
