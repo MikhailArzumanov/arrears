@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Преподаватели</title>
+        <link rel="stylesheet" href="/students/students.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/students"></links-panel>
+        <students-panel currentLink="/students"></students-panel>
+		<script src="/students/students.js" type="module"></script>
+    </body>
+</html>
