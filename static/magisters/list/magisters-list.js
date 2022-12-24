@@ -12,6 +12,7 @@ import { MagistersService } from "../../-services/magisters.service.js";
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
+const ADDITION_BUTTON_ANNOTATION = 'Добавить преподавателя';
 
 let pageNum = 1;
 let table;
@@ -135,7 +136,7 @@ function createAdditionRow(){
     additionCol.setAttribute('colspan','8');
     let additionButton = document.createElement('button');
     additionButton.onclick = addEntry;
-    additionButton.innerHTML = 'Добавить преподавателя';
+    additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
     additionButton.setAttribute('class', 'additionButton');
     additionCol.appendChild(additionButton);
     additionRow.appendChild(additionCol);
