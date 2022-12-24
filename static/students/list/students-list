@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Список студентов</title>
+        <link rel="stylesheet" href="/students/list/students-list.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/students"></links-panel>
+        <students-panel currentLink="/students/list"></students-panel>
+        <table class="searchForm">
+            <tr>
+                <th class="idCol"></th>
+                <th class="surnameCol"       ><input type="text" id="surnameField">       </th>
+                <th class="nameCol"          ><input type="text" id="nameField">          </th>
+                <th class="patronymicNameCol"><input type="text" id="patronymicNameField"></th>
+                <th class="facultyCol">       <select id="facultyField">   </select>      </th>
+                <th class="departmentCol">    <select id="departmentField"></select>      </th>
+                <th class="groupCol">         <select id="groupField">     </select>      </th>
+                <th class="redactCol">        <button id="searchBtn">Поиск </button>      </th>
+                <th class="navCol">       
+                    <button id="prevPageBtn" disabled>&lt;</button>
+                    <span id="pageNumLabel">1</span>
+                    <button id="nextPageBtn">&gt;</button>
+                </th>
+            </tr>
+        </table>
+        <table id="studentsTable">
+            <tr class="tableHeader">
+                <th class="idCol">Id                  </th>
+                <th class="surnameCol">Фамилия        </th>
+                <th class="nameCol">Имя               </th>
+                <th class="patronymicNameCol">Отчество</th>
+                <th class="facultyCol">Институт       </th>
+                <th class="departmentCol">Кафедра     </th>
+                <th class="groupCol">Группа           </th>
+                <th class="redactCol">                </th>
+                <th class="deleteCol">                </th>
+            </tr>
+        </table>
+		<script src="/students/list/students-list.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>

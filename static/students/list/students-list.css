@@ -1,0 +1,78 @@
+body{
+    background: white;
+    padding: 0;
+    margin: 0;
+    border: none;
+    transition: opacity, 1s; 
+    opacity: 0.0;
+}
+
+#studentsTable, .searchForm{
+    border: 1px solid black;
+    width: 1200px;
+    margin: auto;
+    margin-top: 23px;
+}
+
+.searchForm{
+    padding: 7px 3px;
+}
+
+#studentsTable th{
+    border: 1px solid black;
+}
+
+#studentsTable td{
+    border: 1px solid black;
+    text-align: center;
+}
+
+.navCol{
+    width: 120px;
+}
+
+#prevPageBtn, #nextPageBtn{
+    display: inline;
+    width: 23px;
+    padding: 0;
+}
+
+.idCol{
+    padding: 2px 7px;
+}
+
+.surnameCol{
+    padding: 2px 7px;
+}
+
+.nameCol{
+    padding: 2px 7px;
+}
+
+.patronymicNameCol{
+    padding: 2px 7px;
+}
+
+.redactCol{
+    width: 112px;
+}
+
+.facultyCol{
+    padding: 2px 7px;
+}
+
+.departmentCol{
+    padding: 2px 7px;
+}
+
+.groupCol{
+    padding: 2px 7px;
+}
+
+.deleteCol{
+    width: 48px;
+}
+
+.additionButton{
+    width: 100%;
+}
