@@ -17,8 +17,15 @@ namespace arrearsApi5_0.Controllers{
     public class MagistersController : ControllerBase {
         private ApplicationContext db;
         private IConfiguration config;
-
-        const string AUTH_ERROR = "Авторизационные данные некорректны.";
+        
+        const string AUTH_ERROR                  = "Авторизационные данные некорректны.";
+        const string DEPARTMENT_NOT_FOUND        = "Заданная для преподавателя кафедра не найдена.";
+        const string AUTH_NOT_FOUND              = "Запись с заданными авторизационными данными отсутствует.";
+        const string ID_NOT_FOUND                = "Запись с заданным идентификатором не найдена.";
+        const string DEPARTMENT_HAS_NO_MAGISTERS = "У данной кафедры нет преподавателей.";
+        const string LOGIN_OCCUPIED              = "Логин занят.";
+        const string TOKEN_TYPE = "group";
+        const string AUTH_TYPE  = "group";
 
         public MagistersController(ApplicationContext context, IConfiguration config) {
             this.db = context;
@@ -30,14 +37,14 @@ namespace arrearsApi5_0.Controllers{
             var login    = data.Login;
             var password = PasswordHasher.Hash(data.Password);
             var entry = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Login == login && x.Password == password);
-            if (entry == null) return NotFound("Кафедра с заданным авторизационными данными отсутствует.");
-            var token = TokenHandler.BuildToken(new string[] { "magister" }, config);
-            return Ok(new { token = token, authData = data, type="magister", magister=entry });
+            if (entry == null) return NotFound(AUTH_NOT_FOUND);
+            var token = TokenHandler.BuildToken(new string[] { TOKEN_TYPE }, config);
+            return Ok(new { token = token, authData = data, type=AUTH_TYPE, magister=entry });
         }
         [HttpGet("by_department")]
         public IActionResult GetFirstByDepartment([FromQuery] int departmentId){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.DepartmentId == departmentId);
-            if (magister == null) return NotFound("У данной кафедры нет групп");
+            if (magister == null) return NotFound(DEPARTMENT_HAS_NO_MAGISTERS);
             return Ok(magister);
         }
 
@@ -68,7 +75,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] MagisterRedactionRequest request, [FromQuery] string authType){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == request.magisterData.DepartmentId);
-            if (department == null) return NotFound("Кафедра заданной группы не найдена.");
+            if (department == null) return NotFound(DEPARTMENT_NOT_FOUND);
             if (!AuthValidation.isAuthValid(department, request.authData, authType, true)) 
                 return BadRequest(AUTH_ERROR);
             var LoginGen = new LoginGen();
@@ -84,14 +91,16 @@ namespace arrearsApi5_0.Controllers{
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] MagisterRedactionRequest request, [FromQuery] string authType){
             var previous = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
-            if (previous == null) return NotFound("Кафедра с заданным идентификатором не найдена.");
+            if (previous == null) return NotFound(ID_NOT_FOUND);
             if(!AuthValidation.isAuthValid(previous, request.authData, authType)) return BadRequest(AUTH_ERROR);
             var intersection = db.Magisters.FirstOrDefault(x => x.Id != previous.Id && x.Login == request.magisterData.Login);
-            if (intersection != null) return BadRequest("Логин занят.");
+            if (intersection != null) return BadRequest(LOGIN_OCCUPIED);
             previous.Login     = request.magisterData.Login;
             previous.Password  = PasswordHasher.Hash(request.magisterData.Password);
             switch(authType){
                 case "faculty":
+                    var isDepartmentIdValid = db.Departments.Any(x => x.Id == request.magisterData.DepartmentId);
+                    if (!isDepartmentIdValid) return NotFound(DEPARTMENT_NOT_FOUND);
                     previous.Surname        = request.magisterData.Surname;
                     previous.Name           = request.magisterData.Name;
                     previous.PatronymicName = request.magisterData.PatronymicName;
@@ -111,7 +120,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
-            if (magister == null) return NotFound("Кафдера с заданным идентификатором не найдена.");
+            if (magister == null) return NotFound(ID_NOT_FOUND);
             if (!AuthValidation.isAuthValid(magister, authData, authType, false))
                 return BadRequest(AUTH_ERROR);
             db.Magisters.Remove(magister);
@@ -128,7 +137,9 @@ namespace arrearsApi5_0.Controllers{
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullMagister request){
             var previous = db.Magisters.FirstOrDefault(x => x.Id == id);
-            if (previous == null) return NotFound("Кафедра с заданным идентификатором не найдена.");
+            if (previous == null) return NotFound(ID_NOT_FOUND);
+            var isDepartmentIdValid = db.Departments.Any(x => x.Id == request.DepartmentId);
+            if (!isDepartmentIdValid) return NotFound(DEPARTMENT_NOT_FOUND);
             previous.Login          = request.Login;
             previous.Password       = PasswordHasher.Hash(request.Password);
             previous.Surname        = request.Surname;
@@ -142,6 +153,8 @@ namespace arrearsApi5_0.Controllers{
 
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] FullMagister magister){
+            var isDepartmentIdValid = db.Departments.Any(x => x.Id == magister.DepartmentId);
+            if (!isDepartmentIdValid) return NotFound(DEPARTMENT_NOT_FOUND);
             var LoginGen = new LoginGen();
             while(db.Magisters.Any(x => x.Login == magister.Login)){
                 magister.Login = LoginGen.Next();
@@ -155,7 +168,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             var department = db.Magisters.FirstOrDefault(x => x.Id == id);
-            if (department == null) return NotFound("Кафдера с заданным идентификатором не найдена.");
+            if (department == null) return NotFound(ID_NOT_FOUND);
             db.Magisters.Remove(department);
             db.SaveChanges();
             return Ok(department);

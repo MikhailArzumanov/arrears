@@ -18,7 +18,12 @@ namespace arrearsApi5_0.Controllers{
         private ApplicationContext db;
         private IConfiguration config;
 
-        const string AUTH_ERROR = "Авторизационные данные некорректны.";
+        const string AUTH_ERROR     = "Авторизационные данные некорректны.";
+        const string ID_NOT_FOUND   = "Институт с заданным идентификатором не найден.";
+        const string AUTH_NOT_FOUND = "Институт с заданным авторизационными данными отсутствует.";
+        const string LOGIN_OCCUPIED = "Логин занят.";
+        const string TOKEN_TYPE = "faculty";
+        const string AUTH_TYPE  = "faculty";
 
         public FacultiesController(ApplicationContext context, IConfiguration config) {
             this.db = context;
@@ -28,11 +33,11 @@ namespace arrearsApi5_0.Controllers{
         [HttpPost("token")]
         public IActionResult Login([FromBody] AuthData data){
             var login    = data.Login;
-            var password = Utils.PasswordHasher.Hash(data.Password);
+            var password = PasswordHasher.Hash(data.Password);
             var entry = db.Faculties.FirstOrDefault(x => x.Login == login && x.Password == password);
-            if (entry == null) return NotFound("Институт с заданным авторизационными данными отсутствует.");
-            var token = TokenHandler.BuildToken(new string[] { "faculty" }, config);
-            return Ok(new { token = token, authData = data, type="faculty", faculty=entry });
+            if (entry == null) return NotFound(AUTH_NOT_FOUND);
+            var token = TokenHandler.BuildToken(new string[] { TOKEN_TYPE}, config);
+            return Ok(new { token = token, authData = data, type=AUTH_TYPE, faculty=entry });
         }
 
         [HttpGet("all")]
@@ -44,11 +49,11 @@ namespace arrearsApi5_0.Controllers{
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] FacultyRedactionRequest request){
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
-            if (previous == null) return NotFound("Институт с заданным идентификатором не найден.");
+            if (previous == null) return NotFound(ID_NOT_FOUND);
             if (!AuthValidation.isAuthValid(previous,request.authData))
                 return BadRequest(AUTH_ERROR);
             var intersection = db.Faculties.FirstOrDefault(x => x.Id != previous.Id && x.Login == request.facultyData.Login);
-            if (intersection != null) return BadRequest("Логин занят.");
+            if (intersection != null) return BadRequest(LOGIN_OCCUPIED);
             previous.Login     = request.facultyData.Login;
             previous.Password  = PasswordHasher.Hash(request.facultyData.Password);
             //previous.Name      = request.facultyData.Name;
@@ -67,7 +72,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullFaculty request){
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
-            if (previous == null) return NotFound("Институт с заданным идентификатором не найден.");
+            if (previous == null) return NotFound(ID_NOT_FOUND);
             previous.Login     = request.Login;
             previous.Password  = PasswordHasher.Hash(request.Password);
             previous.Name      = request.Name;
@@ -79,7 +84,7 @@ namespace arrearsApi5_0.Controllers{
 
         [HttpPost("admin/add")]
         public IActionResult AddEntry([FromBody] FullFaculty faculty){
-            var LoginGen = new Utils.LoginGen();
+            var LoginGen = new LoginGen();
             while(db.Faculties.Any(x => x.Login == faculty.Login)){
                 faculty.Login = LoginGen.Next();
             }
@@ -93,7 +98,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveEntry([FromRoute] int id){
             var faculty = db.Faculties.FirstOrDefault(x => x.Id == id);
-            if (faculty == null) return NotFound("Институт с заданным идентификатором не найден.");
+            if (faculty == null) return NotFound(ID_NOT_FOUND);
             db.Faculties.Remove(faculty);
             db.SaveChanges();
             return Ok(faculty);

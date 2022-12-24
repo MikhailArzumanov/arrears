@@ -18,7 +18,14 @@ namespace arrearsApi5_0.Controllers{
         private ApplicationContext db;
         private IConfiguration config;
 
-        const string AUTH_ERROR = "Авторизационные данные некорректны.";
+        const string AUTH_ERROR                 = "Авторизационные данные некорректны.";
+        const string FACULTY_NOT_FOUND          = "Заданный для кафедры институт не найден";
+        const string AUTH_NOT_FOUND             = "Кафедра с заданным авторизационными данными отсутствует.";
+        const string ID_NOT_FOUND               = "Кафедра с заданным идентификатором не найдена.";
+        const string FACULTY_HAS_NO_DEPARTMENTS = "У данного института нет кафедр";
+        const string LOGIN_OCCUPIED             = "Логин занят.";
+        const string TOKEN_TYPE = "department";
+        const string AUTH_TYPE  = "department";
 
         public DepartmentsController(ApplicationContext context, IConfiguration config) {
             this.db = context;
@@ -30,9 +37,9 @@ namespace arrearsApi5_0.Controllers{
             var login = data.Login;
             var password = PasswordHasher.Hash(data.Password);
             var entry = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Login == login && x.Password == password);
-            if (entry == null) return NotFound("Кафедра с заданным авторизационными данными отсутствует.");
-            var token = TokenHandler.BuildToken(new string[] { "department" }, config);
-            return Ok(new { token = token, authData = data, type = "department", department = entry });
+            if (entry == null) return NotFound(AUTH_NOT_FOUND);
+            var token = TokenHandler.BuildToken(new string[] { TOKEN_TYPE }, config);
+            return Ok(new { token = token, authData = data, type = AUTH_TYPE, department = entry });
         }
 
         [HttpGet("list")]
@@ -46,7 +53,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpPost("get/{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
-            if (department == null) return NotFound("кафедра с заданным идентификатором не найдена.");
+            if (department == null) return NotFound(ID_NOT_FOUND);
             var login = authData.Login;
             var password = PasswordHasher.Hash(authData.Password);
             if (department.Faculty.Login != login || department.Faculty.Password != password)
@@ -57,13 +64,13 @@ namespace arrearsApi5_0.Controllers{
         [HttpGet("by_faculty")]
         public IActionResult GetFirstByFaculty([FromQuery] int facultyId){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.FacultyId == facultyId);
-            if (department == null) return NotFound("У данного института нет кафедр");
+            if (department == null) return NotFound(FACULTY_HAS_NO_DEPARTMENTS);
             return Ok(department);
         }
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] DepartmentRedactionRequest request){
             var faculty = db.Faculties.FirstOrDefault(x => x.Id == request.departmentData.FacultyId);
-            if (faculty == null) return NotFound("Институт заданной кафедры не найден.");
+            if (faculty == null) return NotFound(FACULTY_NOT_FOUND);
 
             if (!AuthValidation.isAuthValid(faculty, request.authData))
                 return BadRequest(AUTH_ERROR);
@@ -80,11 +87,11 @@ namespace arrearsApi5_0.Controllers{
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] DepartmentRedactionRequest request, [FromQuery] string authType){
             var previous = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
-            if (previous == null) return NotFound("Кафедра с заданным идентификатором не найдена.");
+            if (previous == null) return NotFound(ID_NOT_FOUND);
             if (!AuthValidation.isAuthValid(previous, request.authData, authType, true))
                 return BadRequest(AUTH_ERROR);
             var intersection = db.Departments.FirstOrDefault(x => x.Id != previous.Id && x.Login == request.departmentData.Login);
-            if (intersection != null) return BadRequest("Логин занят.");
+            if (intersection != null) return BadRequest(LOGIN_OCCUPIED);
             previous.Login     = request.departmentData.Login;
             previous.Password  = Utils.PasswordHasher.Hash(request.departmentData.Password);
             if (authType != "department"){
@@ -100,7 +107,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id, [FromBody] AuthData authData){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
-            if (department == null) return NotFound("Кафдера с заданным идентификатором не найдена.");
+            if (department == null) return NotFound(ID_NOT_FOUND);
             var login = authData.Login; var password = PasswordHasher.Hash(authData.Password);
             if (department.Faculty.Login != login || department.Faculty.Password != password)
                 return BadRequest(AUTH_ERROR);
@@ -119,7 +126,9 @@ namespace arrearsApi5_0.Controllers{
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullDepartment request){
             var previous = db.Departments.FirstOrDefault(x => x.Id == id);
-            if (previous == null) return NotFound("Кафедра с заданным идентификатором не найдена.");
+            if (previous == null) return NotFound(ID_NOT_FOUND);
+            var isFacultyValid = db.Faculties.Any(x => x.Id == request.FacultyId);
+            if (!isFacultyValid) return NotFound(FACULTY_NOT_FOUND);
             previous.Login     = request.Login;
             previous.Password  = PasswordHasher.Hash(request.Password);
             previous.Name      = request.Name;
@@ -132,6 +141,8 @@ namespace arrearsApi5_0.Controllers{
 
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] FullDepartment department){
+            var isFacultyValid = db.Faculties.Any(x => x.Id == department.FacultyId);
+            if (!isFacultyValid) return NotFound(FACULTY_NOT_FOUND);
             var LoginGen = new LoginGen();
             while(db.Departments.Any(x => x.Login == department.Login)){
                 department.Login = LoginGen.Next();
@@ -145,7 +156,7 @@ namespace arrearsApi5_0.Controllers{
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             var department = db.Departments.FirstOrDefault(x => x.Id == id);
-            if (department == null) return NotFound("Кафдера с заданным идентификатором не найдена.");
+            if (department == null) return NotFound(ID_NOT_FOUND);
             db.Departments.Remove(department);
             return Ok(department);
         }
