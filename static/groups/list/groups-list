@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Список институтов</title>
+        <title>Список групп</title>
         <link rel="stylesheet" href="/groups/list/groups-list.css"/>
         <script src="/defining.js" type="module"></script>
     </head>
