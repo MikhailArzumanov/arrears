@@ -53,8 +53,8 @@ namespace arrearsApi5_0.Controllers{
                                      [FromQuery] string searchSurname, [FromQuery] string searchName, [FromQuery] string searchPatronymicName,
                                      [FromQuery] int pageNum = 1, [FromQuery] int pageSize = 20) {
             var magisters = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).ToArray();
-            if (facultyId    != 0) magisters = magisters.Where(x => x.Department.FacultyId == facultyId).ToArray();
-            if (departmentId != 0) magisters = magisters.Where(x => x.DepartmentId == departmentId).ToArray();
+            if (departmentId   != 0) magisters = magisters.Where(x => x.DepartmentId         == departmentId).ToArray();
+            else if (facultyId != 0) magisters = magisters.Where(x => x.Department.FacultyId == facultyId   ).ToArray();
             if (searchSurname        != null) magisters = magisters.Where(x => x.Name.Contains(searchSurname       )).ToArray();
             if (searchName           != null) magisters = magisters.Where(x => x.Name.Contains(searchName          )).ToArray();
             if (searchPatronymicName != null) magisters = magisters.Where(x => x.Name.Contains(searchPatronymicName)).ToArray();

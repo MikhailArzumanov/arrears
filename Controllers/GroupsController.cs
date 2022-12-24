@@ -51,9 +51,9 @@ namespace arrearsApi5_0.Controllers{
         public IActionResult GetList([FromQuery] int facultyId, [FromQuery] int departmentId, [FromQuery] string searchVal, 
                                      [FromQuery] int pageNum = 1, [FromQuery] int pageSize = 20) {
             var groups = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).ToArray();
-            if (facultyId    != 0) groups = groups.Where(x => x.Department.FacultyId == facultyId   ).ToArray();
-            if (departmentId != 0) groups = groups.Where(x => x.DepartmentId         == departmentId).ToArray();
-            if (searchVal != null) groups = groups.Where(x => x.Name.Contains(searchVal)            ).ToArray();
+            if (departmentId != 0)   groups = groups.Where(x => x.DepartmentId         == departmentId).ToArray();
+            else if (facultyId != 0) groups = groups.Where(x => x.Department.FacultyId == facultyId   ).ToArray();
+            if (searchVal != null)   groups = groups.Where(x => x.Name.Contains(searchVal)            ).ToArray();
             var fullSize = groups.Count();
             var pagesAmount = fullSize / pageSize + (fullSize % pageSize != 0 ? 1 : 0);
             if(pageNum != 0) groups = groups.Skip((pageNum - 1) * pageSize).Take(pageSize).ToArray();
