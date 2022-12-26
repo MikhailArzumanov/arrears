@@ -1,6 +1,7 @@
 import { http } from '../-http/http.js';
 import { AuthData } from '../-models/auth-data.model.js';
 import {AuthorizedService} from './-base-services/authorized.service.js';
+import { DepartmentRedactionRequest } from './-models/departments/department-redaction-request.model.js';
 import { GroupRedactionRequest } from './-models/groups/group-redaction-request.model.js';
 
 export class GroupsService extends AuthorizedService{
@@ -35,6 +36,15 @@ export class GroupsService extends AuthorizedService{
         let params = {facultyId: facultyId, departmentId: departmentId, searchVal: searchVal, 
                       pageNum: pageNum, pageSize: pageSize};
         return await http.get(url, headers, params, false);
+    }
+
+    static async getConcreteTruncated(id){
+        let METHOD_NAME = '';
+        let url = `${this.CONTROLLER_URL}/${id}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {};
+        return await http.get(url,headers,params,false);
     }
 
     static async getConcrete(id){
@@ -75,6 +85,20 @@ export class GroupsService extends AuthorizedService{
         let params = {authType: this.getAuthorizedType};
         let body   = this.getAuthorizationData;
         return await http.delete(url,headers,params,body,false);
+    }
+
+
+    static async selfRedact(newAuthData, oldAuthData){
+        let METHOD_NAME = '';
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {authType: this.getAuthorizedType};
+        let groupData          = this.getAuthorizedData;
+            groupData.login    = newAuthData.login;
+            groupData.password = newAuthData.password;
+        let url  = `${this.CONTROLLER_URL}/${groupData.id}`;
+        let body = new GroupRedactionRequest(oldAuthData,groupData);
+        return await http.put(url,headers,params,body,false);
     }
 
     static async redactAsAdministrator(group){

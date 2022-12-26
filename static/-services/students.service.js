@@ -18,7 +18,7 @@ export class StudentsService extends AuthorizedService{
     }
 
     //static async getFirstByGroup(groupId){
-    //    let METHOD_NAME = 'by_department';
+    //    let METHOD_NAME = 'by_group';
     //    let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
     //    let headers = this.getTokenHeaders();
     //        headers['Content-Type'] = "application/json;charset=UTF-8";
@@ -78,6 +78,19 @@ export class StudentsService extends AuthorizedService{
         let params = {authType: this.getAuthorizedType};
         let body   = this.getAuthorizationData;
         return await http.delete(url,headers,params,body,false);
+    }
+
+    static async selfRedact(newAuthData, oldAuthData){
+        let METHOD_NAME = '';
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {authType: this.getAuthorizedType};
+        let studentsData          = this.getAuthorizedData;
+            studentsData.login    = newAuthData.login;
+            studentsData.password = newAuthData.password;
+        let url  = `${this.CONTROLLER_URL}/${studentsData.id}`;
+        let body = new StudentRedactionRequest(oldAuthData,studentsData);
+        return await http.put(url,headers,params,body,false);
     }
 
     static async redactAsAdministrator(student){

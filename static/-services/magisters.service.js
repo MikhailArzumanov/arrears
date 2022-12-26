@@ -40,6 +40,15 @@ export class MagistersService extends AuthorizedService{
         return await http.get(url, headers, params, false);
     }
 
+    static async getConcreteTruncated(id){
+        let METHOD_NAME = '';
+        let url = `${this.CONTROLLER_URL}/${id}`;
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {};
+        return await http.get(url,headers,params,false);
+    }
+    
     static async getConcrete(id){
         let METHOD_NAME = '';
         let url = `${this.CONTROLLER_URL}/${id}`;
@@ -78,6 +87,19 @@ export class MagistersService extends AuthorizedService{
         let params = {authType: this.getAuthorizedType};
         let body   = this.getAuthorizationData;
         return await http.delete(url,headers,params,body,false);
+    }
+
+    static async selfRedact(newAuthData, oldAuthData){
+        let METHOD_NAME = '';
+        let headers = this.getTokenHeaders();
+            headers['Content-Type'] = "application/json;charset=UTF-8";
+        let params = {authType: this.getAuthorizedType};
+        let magisterData          = this.getAuthorizedData;
+            magisterData.login    = newAuthData.login;
+            magisterData.password = newAuthData.password;
+        let url  = `${this.CONTROLLER_URL}/${magisterData.id}`;
+        let body = new MagisterRedactionRequest(oldAuthData,magisterData);
+        return await http.put(url,headers,params,body,false);
     }
 
     static async redactAsAdministrator(magister){
