@@ -24,8 +24,8 @@ namespace arrearsApi5_0.Controllers{
         const string ID_NOT_FOUND                = "Запись с заданным идентификатором не найдена.";
         const string DEPARTMENT_HAS_NO_MAGISTERS = "У данной кафедры нет преподавателей.";
         const string LOGIN_OCCUPIED              = "Логин занят.";
-        const string TOKEN_TYPE = "group";
-        const string AUTH_TYPE  = "group";
+        const string TOKEN_TYPE = "magister";
+        const string AUTH_TYPE  = "magister";
 
         public MagistersController(ApplicationContext context, IConfiguration config) {
             this.db = context;
@@ -55,15 +55,23 @@ namespace arrearsApi5_0.Controllers{
             var magisters = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).ToArray();
             if (departmentId   != 0) magisters = magisters.Where(x => x.DepartmentId         == departmentId).ToArray();
             else if (facultyId != 0) magisters = magisters.Where(x => x.Department.FacultyId == facultyId   ).ToArray();
-            if (searchSurname        != null) magisters = magisters.Where(x => x.Name.Contains(searchSurname       )).ToArray();
-            if (searchName           != null) magisters = magisters.Where(x => x.Name.Contains(searchName          )).ToArray();
-            if (searchPatronymicName != null) magisters = magisters.Where(x => x.Name.Contains(searchPatronymicName)).ToArray();
+            if (searchSurname        != null) magisters = magisters.Where(x =>        x.Surname.Contains(searchSurname       )).ToArray();
+            if (searchName           != null) magisters = magisters.Where(x =>           x.Name.Contains(searchName          )).ToArray();
+            if (searchPatronymicName != null) magisters = magisters.Where(x => x.PatronymicName.Contains(searchPatronymicName)).ToArray();
             var fullSize = magisters.Count();
             var pagesAmount = fullSize / pageSize + (fullSize % pageSize != 0 ? 1 : 0);
             if(pageNum != 0) magisters = magisters.Skip((pageNum - 1) * pageSize).Take(pageSize).ToArray();
             return Ok(new { magisters = magisters, pagesAmount = pagesAmount });
         }
         
+        
+        [HttpGet("{id}")]
+        public IActionResult GetConcreteTruncated([FromRoute] int id){
+            var magister = db.Magisters.FirstOrDefault(x => x.Id == id);
+            if (magister == null) return NotFound(ID_NOT_FOUND);
+            return Ok(magister);
+        }
+
         [HttpPost("{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
