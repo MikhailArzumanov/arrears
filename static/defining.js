@@ -2,6 +2,7 @@ import { ErrorBarComponent } from "./-components/error-bar/error-bar.component.j
 import { LinkComponent } from "./-components/link/link.component.js";
 import { LinksPanelComponent } from "./-components/links-panel/links-panel.component.js";
 import { DepartmentsPanelComponent } from "./departments/-components/departments-panel/departments-panel.component.js";
+import { DisciplinePanelComponent } from "./disciplines/-components/disciplines-panel/disciplines-panel.component.js";
 import { FacultiesPanelComponent } from "./faculties/-components/faculties-panel/faculties-panel.component.js";
 import { GroupsPanelComponent } from "./groups/-components/groups-panel/groups-panel.component.js";
 import { MagistersPanelComponent } from "./magisters/-components/magisters-panel/magisters-panel.component.js";
@@ -32,6 +33,8 @@ customElements.define('magisters-panel', MagistersPanelComponent);
 addStyles('/magisters/-components/magisters-panel/magisters-panel.component.css');
 customElements.define('students-panel', StudentsPanelComponent);
 addStyles('/students/-components/students-panel/students-panel.component.css');
+customElements.define('disciplines-panel', DisciplinePanelComponent);
+addStyles('/disciplines/-components/disciplines-panel/disciplines-panel.component.css')
 
 customElements.define('panel-link', LinkComponent);
 addStyles('/-components/link/link.component.css');
