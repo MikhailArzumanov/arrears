@@ -2,25 +2,23 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using arrearsApi5_0.Data;
 
-namespace arrearsApi5_0.Migrations
-{
+namespace arrearsApi5_0.Migrations{
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
-    {
-        protected override void BuildModel(ModelBuilder modelBuilder)
-        {
+    [Migration("20221226135527_ArrearSheetModelRedaction")]
+    partial class ArrearSheetModelRedaction{
+        protected override void BuildTargetModel(ModelBuilder modelBuilder){
 #pragma warning disable 612, 618
             modelBuilder
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("DisciplineGroup", b =>
-                {
+            modelBuilder.Entity("DisciplineGroup", b =>{
                     b.Property<int>("DisciplinesId")
                         .HasColumnType("integer");
 
@@ -34,8 +32,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("DisciplineGroup");
                 });
 
-            modelBuilder.Entity("DisciplineMagister", b =>
-                {
+            modelBuilder.Entity("DisciplineMagister", b =>{
                     b.Property<int>("DisciplinesId")
                         .HasColumnType("integer");
 
@@ -49,8 +46,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("DisciplineMagister");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.ArrearSheet", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.ArrearSheet", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -85,8 +81,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("ArrearSheets");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Department", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Department", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -114,8 +109,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("Departments");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Discipline", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Discipline", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -141,8 +135,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("Disciplines");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Faculty", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Faculty", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -165,8 +158,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("Faculties");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Group", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Group", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -191,8 +183,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Magister", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Magister", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -223,8 +214,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("Magisters");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Student", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Student", b =>{
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -255,8 +245,7 @@ namespace arrearsApi5_0.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("DisciplineGroup", b =>
-                {
+            modelBuilder.Entity("DisciplineGroup", b =>{
                     b.HasOne("arrearsApi5_0.Models.Discipline", null)
                         .WithMany()
                         .HasForeignKey("DisciplinesId")
@@ -270,8 +259,7 @@ namespace arrearsApi5_0.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DisciplineMagister", b =>
-                {
+            modelBuilder.Entity("DisciplineMagister", b =>{
                     b.HasOne("arrearsApi5_0.Models.Discipline", null)
                         .WithMany()
                         .HasForeignKey("DisciplinesId")
@@ -285,8 +273,7 @@ namespace arrearsApi5_0.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.ArrearSheet", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.ArrearSheet", b =>{
                     b.HasOne("arrearsApi5_0.Models.Discipline", "Discipline")
                         .WithMany()
                         .HasForeignKey("DisciplineId")
@@ -312,8 +299,7 @@ namespace arrearsApi5_0.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Department", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Department", b =>{
                     b.HasOne("arrearsApi5_0.Models.Faculty", "Faculty")
                         .WithMany()
                         .HasForeignKey("FacultyId")
@@ -323,8 +309,7 @@ namespace arrearsApi5_0.Migrations
                     b.Navigation("Faculty");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Group", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Group", b =>{
                     b.HasOne("arrearsApi5_0.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
@@ -334,8 +319,7 @@ namespace arrearsApi5_0.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Magister", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Magister", b =>{
                     b.HasOne("arrearsApi5_0.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
@@ -345,8 +329,7 @@ namespace arrearsApi5_0.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("arrearsApi5_0.Models.Student", b =>
-                {
+            modelBuilder.Entity("arrearsApi5_0.Models.Student", b =>{
                     b.HasOne("arrearsApi5_0.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
