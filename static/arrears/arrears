@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Долговые листы</title>
+        <link rel="stylesheet" href="/arrears/arrears.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/arrears"></links-panel>
+        <arrears-panel currentLink="/arrears"></arrears-panel>
+		<script src="/arrears/arrears.js" type="module"></script>
+    </body>
+</html>

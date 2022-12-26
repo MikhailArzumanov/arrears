@@ -58,7 +58,7 @@ function getSheetHandler(event){
     let element      = event.originalTarget;
     let disciplineId = element.getAttribute('disciplineId');
     sessionStorage.setItem('disciplineId', disciplineId);
-    redirect('/arrearsSheets/creation');
+    redirect('/arrears/creation');
 }
 
 async function deleteDiscipline(event){

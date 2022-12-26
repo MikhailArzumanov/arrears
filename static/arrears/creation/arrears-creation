@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Формирование листа</title>
+        <link rel="stylesheet" href="/arrears/creation/arrears-creation.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/arrears"></links-panel>
+        <arrears-panel currentLink="/arrears/creation"></arrears-panel>
+        <table class="arrearCreationForm">
+            <tr><td class="labelCol">Дисциплина: </td><td class="fieldCol"><select id="disciplineField" disabled></select></td></tr>
+            <tr>
+                <td class="labelCol"><input id="studentFilterField" type="text" placeholder="Фамилия студента..." /></td>
+                <td class="fieldCol"><button id="studentFilterBtn">Фильтр...</button></td>
+            </tr>
+            <tr><td class="labelCol" colspan="2"><select id="studentField"></select></td></tr>
+            <tr><td class="labelCol">Преподаватель</td><td><select id="magisterField"></select></td></tr>
+            <tr><td colspan="2"><button id="saveButton">Сформировать</button></td></tr>
+        </table>
+		<script src="/arrears/creation/arrears-creation.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>

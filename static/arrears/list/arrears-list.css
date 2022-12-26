@@ -1,0 +1,93 @@
+body{
+    background: white;
+    padding: 0;
+    margin: 0;
+    border: none;
+    transition: opacity, 1s; 
+    opacity: 1.0;
+}
+
+#searchBtn{
+    width: 100%;
+}
+
+#facultyField, #yearField{
+    width: 100px;
+}
+
+#departmentField, #semestrField{
+    width: 120px;
+}
+
+#passTypeField, #groupField {
+    width: 120px;
+}
+
+#magisterSurnameField,#disciplineNameField,#studentSurnameField{
+    width: 234px;
+}
+
+.navContainer{
+    width: 84px;
+    margin: auto;
+}
+
+#arrearsTable, .searchForm{
+    border: 1px solid black;
+    width: 1412px;
+    margin: auto;
+    margin-top: 23px;
+}
+
+#arrearsTable button{
+    width: 100%;
+}
+
+.searchForm{
+    padding: 7px 3px;
+}
+
+#arrearsTable th{
+    border: 1px solid black;
+}
+
+#searchForm td{
+    padding: 2px 7px;
+}
+
+#arrearsTable td{
+    border: 1px solid black;
+    text-align: center;
+}
+
+.navCol{
+    width: 120px;
+    padding-left: 23px;
+}
+
+.markCol {
+    width: 134px;
+}
+
+#prevPageBtn, #nextPageBtn{
+    display: inline;
+    width: 23px;
+    padding: 0;
+}
+
+.redactCol{
+    width: 120px;
+}
+
+
+.sheetCol {
+    width: 144px;
+}
+
+.deleteCol{
+    width: 48px;
+}
+
+.additionButton{
+    width: 100%;
+}
