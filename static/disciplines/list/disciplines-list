@@ -1,0 +1,41 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>Список дисциплин</title>
+        <link rel="stylesheet" href="/disciplines/list/disciplines-list.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/disciplines"></links-panel>
+        <disciplines-panel currentLink="/disciplines/list"></disciplines-panel>
+        <table class="searchForm">
+            <tr>
+                <th class="nameCol" colspan="2"><input type="text" id="nameField"></th>
+                <th class="facultyCol">    <select id="facultyField">   </select> </th>
+                <th class="departmentCol"> <select id="departmentField"></select> </th>
+                <th class="groupCol">      <select id="groupField">     </select> </th>
+                <th class="yearCol">       <select id="yearField">      </select> </th>
+                <th class="semestrCol">    <select id="semestrField">   </select> </th>
+                <th class="typeCol">       <select id="passTypeField">  </select> </th>
+                <th class="redactCol">     <button id="searchBtn">Поиск </button> </th>
+                <th class="navCol">       
+                    <button id="prevPageBtn" disabled>&lt;</button>
+                    <span id="pageNumLabel">1</span>
+                    <button id="nextPageBtn">&gt;</button>
+                </th>
+            </tr>
+        </table>
+        <table id="disciplinesTable">
+            <tr id="tableHeader">
+                <th class="idCol">     Id          </th>
+                <th class="nameCol">   Наименование</th>
+                <th class="groupCol">  Группы      </th>
+                <th class="yearCol">   Год         </th>
+                <th class="semestrCol">Семестр     </th>
+                <th class="typeCol">   Тип сдачи   </th>
+                <th class="sheetCol">              </th>
+            </tr>
+        </table>
+		<script src="/disciplines/list/disciplines-list.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>
