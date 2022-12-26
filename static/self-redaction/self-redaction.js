@@ -10,6 +10,7 @@ import { DepartmentsService } from "../-services/departments.service.js";
 import { FacultiesService } from "../-services/faculties.service.js";
 import { GroupsService } from "../-services/groups.service.js";
 import { MagistersService } from "../-services/magisters.service.js";
+import { StudentsService } from "../-services/students.service.js";
 
 let authorizedType;
 let errorBar;
@@ -93,7 +94,7 @@ async function confirm(){
             response = await MagistersService.selfRedact(newAuthData,oldAuthData);
             break;
         case "student":
-            
+            response = await StudentsService.selfRedact(newAuthData, oldAuthData);
             break;
         default:
             console.log("Authorized type error");
