@@ -1,0 +1,30 @@
+body{
+    background: white;
+    padding: 0;
+    margin: 0;
+    border: none;
+    transition: opacity, 1s; 
+    opacity: 0.0;
+}
+
+.disciplineRedactionForm{
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 7px;
+    width: 500px;
+    margin: auto;
+    margin-top: 23px;
+}
+
+#deleteButton, #saveButton{
+    margin: 3px 4px;
+}
+
+.nameField {
+    width: 401px;
+}
+
+.staticTable{
+    width: 300px;
+    margin: auto;
+}
