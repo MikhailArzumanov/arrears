@@ -59,6 +59,13 @@ namespace arrearsApi5_0.Controllers{
             if(pageNum != 0) groups = groups.Skip((pageNum - 1) * pageSize).Take(pageSize).ToArray();
             return Ok(new { groups = groups, pagesAmount = pagesAmount });
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetConcreteTruncated([FromRoute] int id){
+            var group = db.Groups.FirstOrDefault(x => x.Id == id);
+            if (group == null) return NotFound(ID_NOT_FOUND);
+            return Ok(group);
+        }
         
         [HttpPost("{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
