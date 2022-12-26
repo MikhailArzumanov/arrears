@@ -76,12 +76,10 @@ namespace arrearsApi5_0.Controllers{
 
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] StudentRedactionRequest request, [FromQuery] string authType){
-            var department = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == request.studentData.GroupId);
-            if (department == null) return NotFound(GROUP_NOT_FOUND);
-            if (!AuthValidation.isAuthValid(department, request.authData, authType, true)) 
+            var group = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == request.studentData.GroupId);
+            if (group == null) return NotFound(GROUP_NOT_FOUND);
+            if (!AuthValidation.isAuthValid(group, request.authData, authType, true))
                 return BadRequest(AUTH_ERROR);
-            var isGroupIdValid = db.Groups.Any(x => x.Id == request.studentData.GroupId);
-            if (!isGroupIdValid) return NotFound(GROUP_NOT_FOUND);
             var LoginGen = new LoginGen();
             while(db.Students.Any(x => x.Login == request.studentData.Login)){
                 request.studentData.Login = LoginGen.Next();
