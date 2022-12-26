@@ -125,6 +125,7 @@ function getTableRow(id, surname, name, patronymicName, departmentName, facultyN
 
     for(let col of cols) row.appendChild(col);
 
+    row.setAttribute('class', 'dataRow');
     return row;
 }
 
@@ -166,7 +167,6 @@ async function fillTable(){
         let departmentName = magister.department.shortName;
         let facultyName    = magister.department.faculty.shortName;
         let row = getTableRow(id, surname, name, patronymicName, departmentName, facultyName);
-        row.setAttribute('class', 'dataRow');
         table.appendChild(row);
     }
     createAdditionRow();

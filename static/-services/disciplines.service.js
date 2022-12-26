@@ -1,21 +1,11 @@
 import { http } from '../-http/http.js';
 import { AuthData } from '../-models/auth-data.model.js';
 import {AuthorizedService} from './-base-services/authorized.service.js';
-import { StudentRedactionRequest } from './-models/students/student-redaction-request.model.js';
+import { DisciplineRedactionRequest } from './-models/disciplines/discipline-redaction-request.model.js';
 
-export class StudentsService extends AuthorizedService{
-    static CONTROLLER_NAME = 'students';
+export class DisciplinesService extends AuthorizedService{
+    static CONTROLLER_NAME = 'disciplines';
     static CONTROLLER_URL  = this.SERVICE_URL+this.CONTROLLER_NAME;
-
-    static async login(login, password){
-        let METHOD_NAME = 'token'
-        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
-        let headers = {};
-            headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {};
-        let body = new AuthData(login, password);
-        return await http.post(url,headers,params,body,false);
-    }
 
     //static async getFirstByGroup(groupId){
     //    let METHOD_NAME = 'by_group';
@@ -27,15 +17,14 @@ export class StudentsService extends AuthorizedService{
     //    return await http.get(url, headers, params, false);
     //}
 
-    static async getList(facultyId, departmentId, groupId,
-                         searchSurname, searchName, searchPatronymicName,
+    static async getList(groupId,searchVal, year, semestr, passType,
                          pageNum, pageSize=20){
         let METHOD_NAME = 'list';
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {facultyId: facultyId, departmentId: departmentId, groupId: groupId,
-                      searchSurname:searchSurname, searchName: searchName, searchPatronymicName:searchPatronymicName,
+        let params = {groupId: groupId, searchVal: searchVal,
+                      year:year,        semestr:semestr, type:passType,
                       pageNum: pageNum, pageSize: pageSize};
         return await http.get(url, headers, params, false);
     }
@@ -45,28 +34,28 @@ export class StudentsService extends AuthorizedService{
         let url = `${this.CONTROLLER_URL}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {authType: this.getAuthorizedType};
-        let body = this.getAuthorizationData;
-        return await http.post(url,headers,params,body,false);
+        let params = {} //{authType: this.getAuthorizedType};
+        //let body = this.getAuthorizationData;
+        return await http.get(url,headers,params,false);
     }
 
-    static async addEntry(student){
+    static async addEntry(discipline, groupsIds, magistersIds){
         let METHOD_NAME = "add";
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {authType: this.getAuthorizedType};
-        let body = new StudentRedactionRequest(this.getAuthorizationData, student);
+        let params = {};
+        let body = new DisciplineRedactionRequest(discipline,groupsIds,magistersIds);
         return await http.post(url,headers,params,body,false);
     }
 
-    static async redactEntry(student){
+    static async redactEntry(discipline, groupsIds, magistersIds){
         let METHOD_NAME = "";
-        let url = `${this.CONTROLLER_URL}/${student.id}`;
+        let url = `${this.CONTROLLER_URL}/${discipline.id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {authType: this.getAuthorizedType};
-        let body = new StudentRedactionRequest(this.getAuthorizationData, student);
+        let params = {};
+        let body = new DisciplineRedactionRequest(discipline,groupsIds,magistersIds);
         return await http.put(url,headers,params,body,false);
     }
 
@@ -75,31 +64,18 @@ export class StudentsService extends AuthorizedService{
         let url = `${this.CONTROLLER_URL}/${id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {authType: this.getAuthorizedType};
-        let body   = this.getAuthorizationData;
+        let params = {};
+        let body   = null;
         return await http.delete(url,headers,params,body,false);
     }
 
-    static async selfRedact(newAuthData, oldAuthData){
-        let METHOD_NAME = '';
-        let headers = this.getTokenHeaders();
-            headers['Content-Type'] = "application/json;charset=UTF-8";
-        let params = {authType: this.getAuthorizedType};
-        let studentsData          = this.getAuthorizedData;
-            studentsData.login    = newAuthData.login;
-            studentsData.password = newAuthData.password;
-        let url  = `${this.CONTROLLER_URL}/${studentsData.id}`;
-        let body = new StudentRedactionRequest(oldAuthData,studentsData);
-        return await http.put(url,headers,params,body,false);
-    }
-
-    static async redactAsAdministrator(student){
+    static async redactAsAdministrator(discipline, groupsIds, magistersIds){
         let METHOD_NAME = "admin";
-        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${student.id}`;
+        let url = `${this.CONTROLLER_URL}/${METHOD_NAME}/${discipline.id}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
-        let body = student;
+        let body = new DisciplineRedactionRequest(discipline,groupsIds,magistersIds);;
         return await http.put(url,headers,params,body,false);
     }
     
@@ -113,13 +89,13 @@ export class StudentsService extends AuthorizedService{
         return await http.get(url,headers,params,false);
     }
 
-    static async addAsAdministrator(student){
+    static async addAsAdministrator(discipline, groupsIds, magistersIds){
         let METHOD_NAME = "admin/add";
         let url = `${this.CONTROLLER_URL}/${METHOD_NAME}`;
         let headers = this.getTokenHeaders();
             headers['Content-Type'] = "application/json;charset=UTF-8";
         let params = {};
-        let body = student;
+        let body = new DisciplineRedactionRequest(discipline,groupsIds,magistersIds);
         return await http.post(url,headers,params,body,false);
     }
 

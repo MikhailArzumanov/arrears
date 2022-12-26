@@ -7,6 +7,7 @@ import { showError } from "../-functions/showError.js";
 import { DepartmentsService } from "../-services/departments.service.js";
 import { GroupsService } from "../-services/groups.service.js";
 import { MagistersService } from "../-services/magisters.service.js";
+import { StudentsService } from "../-services/students.service.js";
 
 
 fadeIn();
@@ -27,13 +28,14 @@ async function login(){
     let login    = getValById('loginField');
     let password = getValById('passwordField');
     let type     = getValById('typeField');
-    if(type == 0) showError("Выберите тип авторизации", errorBar);
+    if(type == 0) {showError("Выберите тип авторизации", errorBar); return;}
     
     let response
 
     switch(type){
         case 'student':
             console.log('Student login attemption');
+            response = await StudentsService.login(login,password);
             break;
         case 'magister':
             console.log('Magister login attemption');

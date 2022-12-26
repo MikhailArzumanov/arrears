@@ -121,6 +121,7 @@ function getTableRow(id, name, departmentName, facultyName){
 
     for(let col of cols) row.appendChild(col);
 
+    row.setAttribute('class', 'dataRow');
     return row;
 }
 
@@ -158,7 +159,6 @@ async function fillTable(){
         let departmentName = group.department.shortName;
         let facultyName    = group.department.faculty.shortName;
         let row = getTableRow(id, name, departmentName, facultyName);
-        row.setAttribute('class', 'dataRow');
         table.appendChild(row);
     }
     createAdditionRow();

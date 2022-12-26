@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Редактирование</title>
+        <link rel="stylesheet" href="/disciplines/redaction/disciplines-redaction.css"/>
+        <script src="/defining.js" type="module"></script>
+    </head>
+    <body class="main">
+        <links-panel currentLink="/disciplines"></links-panel>
+        <disciplines-panel currentLink="/disciplines/redaction"></disciplines-panel>
+        <div class="disciplineRedactionForm">
+            <table class="staticTable">
+                <tr><td class="labelCol">Id: </td><td class="fieldCol"><input id="idField" value="0" type="text" disabled/></td></tr>
+                <tr><td class="labelCol">Сокращение: </td><td class="fieldCol"><input id="shortNameField" type="text" value=""/></td></tr>
+                <tr><td class="textareaCol" colspan="2">Наименование: <br/><textarea id="nameField"></textarea></td></tr>
+                <tr><td class="labelCol">Тип сдачи: </td><td class="fieldCol"><select id="passTypeField"></select></td></tr>
+                <tr><td class="labelCol">Год:       </td><td class="fieldCol"><select id="yearField"    ></select></td></tr>
+                <tr><td class="labelCol">Семестр:   </td><td class="fieldCol"><select id="semestrField" ></select></td></tr>
+            </table>
+            <table id="groupsList">
+                <tr id="groupsFilterLine">
+                    <td colspan="2"><input class="nameField" id="groupNameField" type="text" placeholder="Наименование группы..."/></td>
+                    <td><button id="groupsFilterButton">Фильтр...</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><select class="nameField" id="groupsSelectField"></select></td>
+                    <td><button id="addGroupButton">+</button></td>
+                </tr>
+            </table>
+            <table id="magistersList">
+                <tr id="magistersFilterLine">
+                    <td colspan="2"><input class="nameField" id="magisterSurnameField" type="text" placeholder="Фамилия преподавателя..."/></td>
+                    <td><button id="magistersFilterButton">Фильтр...</td>  
+                </tr>
+                <tr>
+                    <td colspan="2"><select class="nameField" id="magistersSelectField"></select></td>
+                    <td><button id="addMagisterButton">+</button></td>
+                </tr>
+            </table>
+                <tr><td><button id="saveButton">Сохранить</button></td><td><button id="deleteButton">Удалить</button></td></tr>
+            </table>
+        </div>
+		<script src="/disciplines/redaction/disciplines-redaction.js" type="module"></script>
+        <error-bar></error-bar>
+    </body>
+</html>

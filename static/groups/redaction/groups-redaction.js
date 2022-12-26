@@ -12,6 +12,8 @@ import { GroupsService } from "../../-services/groups.service.js";
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
+const WAS_NOT_CHOSEN = 'Группа не была выбрана';
+
 let id;
 let errorBar;
 let authType;
@@ -123,7 +125,7 @@ async function init(){
     errorBar = document.getElementsByTagName('error-bar')[0];
     id = sessionStorage.getItem('groupId');
     if(id == null) {
-        showError('Кафедра не была выбрана', errorBar);
+        showError(WAS_NOT_CHOSEN, errorBar);
         clearFieldsAndDisableControls();
         //setTimeout(() => redirect('/groups/list'), 1200);
         return;

@@ -12,6 +12,8 @@ import { MagistersService } from "../../-services/magisters.service.js";
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
+const WAS_NOT_CHOSEN = 'Запись преподавателя не была выбрана';
+
 let id;
 let errorBar;
 let authType;
@@ -131,7 +133,7 @@ async function init(){
     errorBar = document.getElementsByTagName('error-bar')[0];
     id = sessionStorage.getItem('magisterId');
     if(id == null) {
-        showError('Кафедра не была выбрана', errorBar);
+        showError(WAS_NOT_CHOSEN, errorBar);
         clearFieldsAndDisableControls();
         //setTimeout(() => redirect('/magisters/list'), 1200);
         return;

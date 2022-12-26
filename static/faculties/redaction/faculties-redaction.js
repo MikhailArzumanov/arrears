@@ -9,6 +9,8 @@ import { FacultiesService } from "../../-services/faculties.service.js";
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
+const WAS_NOT_CHOSEN = 'Институт не был выбран';
+
 let id;
 let errorBar;
 let fieldsNames = [
@@ -66,7 +68,7 @@ async function init(){
     errorBar = document.getElementsByTagName('error-bar')[0];
     id = sessionStorage.getItem('facultyId');
     if(id == null) {
-        showError('Институт не был выбран', errorBar);
+        showError(WAS_NOT_CHOSEN, errorBar);
         clearFieldsAndDisableControls();
         //setTimeout(() => redirect('/faculties/list'), 1200);
         return;
