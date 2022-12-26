@@ -84,6 +84,9 @@ func initProxymap() {
 	proxyMap["/students"] = "/students/students"
 	proxyMap["/students/list"] = "/students/list/students-list"
 	proxyMap["/students/redaction"] = "/students/redaction/students-redaction"
+	proxyMap["/disciplines"] = "/disciplines/disciplines"
+	proxyMap["/disciplines/list"] = "/disciplines/list/disciplines-list"
+	proxyMap["/disciplines/redaction"] = "/disciplines/redaction/disciplines-redaction"
 }
 
 /////////////////////////////////////////////////////////
