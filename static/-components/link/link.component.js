@@ -1,8 +1,5 @@
 import { redirect } from "../../-functions/redirect.js";
 
-export const LIST_LINK_TEXT      = "Список";
-export const REDACTION_LINK_TEXT = "Редактировать";
-
 export class LinkComponent extends HTMLElement{
     constructor(){
         super();
