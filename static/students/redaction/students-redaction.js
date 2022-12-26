@@ -13,6 +13,8 @@ import { GroupsService } from "../../-services/groups.service.js";
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
+const WAS_NOT_CHOSEN = 'Запись студента не была выбрана';
+
 let id;
 let errorBar;
 let authType;
@@ -50,7 +52,7 @@ async function save(){
 async function deleteEntry(){
     let surname        = getValueById('surnameField');
     let name           = getValueById('nameField');
-    let patronymicName = getValueById('nameField');
+    let patronymicName = getValueById('patronymicNameField');
     let answer = confirm(`Вы уверены, что хотите удалить запись '${surname} ${name} ${patronymicName}'?`);
     if(!answer) return;
     let response;
@@ -131,12 +133,12 @@ async function loadGroups(facultyId, departmentId){
 
 async function reloadDepartments(facultyId){
     clearSelect('departmentField');
-    loadDepartments(facultyId);
+    await loadDepartments(facultyId);
 }
 
 async function reloadGroups(facultyId, departmentId){
     clearSelect('groupField');
-    loadGroups(facultyId, departmentId);
+    await loadGroups(facultyId, departmentId);
 }
 
 async function loadAndFillData(facultyId, departmentId){
@@ -174,7 +176,7 @@ async function init(){
     errorBar = document.getElementsByTagName('error-bar')[0];
     id = sessionStorage.getItem('studentId');
     if(id == null) {
-        showError('Кафедра не была выбрана', errorBar);
+        showError(WAS_NOT_CHOSEN, errorBar);
         clearFieldsAndDisableControls();
         //setTimeout(() => redirect('/students/list'), 1200);
         return;
