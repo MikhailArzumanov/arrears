@@ -11,6 +11,8 @@ import { Department } from "../../-models/department.model.js";
 window.onload = init;
 setTimeout(fadeIn, 1200);
 
+const WAS_NOT_CHOSEN = 'Кафедра не была выбрана';
+
 let id;
 let errorBar;
 let authType;
@@ -113,7 +115,7 @@ async function init(){
     errorBar = document.getElementsByTagName('error-bar')[0];
     id = sessionStorage.getItem('departmentId');
     if(id == null) {
-        showError('Кафедра не была выбрана', errorBar);
+        showError(WAS_NOT_CHOSEN, errorBar);
         clearFieldsAndDisableControls();
         //setTimeout(() => redirect('/departments/list'), 1200);
         return;
