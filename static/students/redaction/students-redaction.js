@@ -45,7 +45,6 @@ async function save(){
         response = await StudentsService.redactAsAdministrator(student);
     else response = await StudentsService.redactEntry(student);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 

@@ -31,7 +31,6 @@ async function deleteDepartment(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function redactDepartment(id){
@@ -90,7 +89,6 @@ function getFacultyId(){
 }
 
 async function addDepartment(){
-    console.log('addition attempt');
     let facultyId = getFacultyId();
     let department = new Department(null,'','','%%%','%', facultyId);
     let response;

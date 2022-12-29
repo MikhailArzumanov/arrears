@@ -39,7 +39,6 @@ async function getDepartmentId(){
 }
 
 async function addGroup(){
-    console.log('addition attempt');
     let departmentId = await getDepartmentId();
     if(departmentId == null) return;
     let group = new Group(null,'','','%%%', departmentId);
@@ -81,7 +80,6 @@ async function deleteGroup(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function getTableRow(id, name, departmentName, facultyName){

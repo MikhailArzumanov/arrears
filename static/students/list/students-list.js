@@ -53,7 +53,6 @@ async function getGroupId(){
 }
 
 async function addEntry(){
-    console.log('addition attempt');
     let groupId = await getGroupId();
     if(groupId == null) return;
     let student = new Student(null,'','','%%%', '%%%', '%%%', groupId);
@@ -95,7 +94,6 @@ async function deleteStudent(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function getTableRow(id, surname, name, patronymicName, groupName, departmentName, facultyName){

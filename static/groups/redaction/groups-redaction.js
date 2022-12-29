@@ -38,7 +38,6 @@ async function save(){
         response = await GroupsService.redactAsAdministrator(group);
     else response = await GroupsService.redactEntry(group);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 
