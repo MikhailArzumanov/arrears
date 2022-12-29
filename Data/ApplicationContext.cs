@@ -6,6 +6,7 @@ namespace arrearsApi5_0.Data{
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) {
             //Database.EnsureCreated();
         }
+        public DbSet<Administrator> Administrators { get; set; }
         public DbSet<ArrearSheet> ArrearSheets { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Discipline> Disciplines { get; set; }
