@@ -66,7 +66,6 @@ async function save(){
         response = await DisciplinesService.redactAsAdministrator(discipline,groupsIds,magistersIds);
     else response = await DisciplinesService.redactEntry(discipline,groupsIds,magistersIds);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 

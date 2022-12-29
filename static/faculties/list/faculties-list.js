@@ -25,7 +25,6 @@ async function deleteFaculty(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function redactFaculty(id){
@@ -74,7 +73,6 @@ function getTableRow(id, name){
 }
 
 async function addFaculty(){
-    console.log('addition attempt');
     let faculty = new Faculty(null,'','','%%%','%');
     let response = await FacultiesService.addFaculty(faculty);
     if(response == null) showError(ErrorsService.getLastError(), errorBar);

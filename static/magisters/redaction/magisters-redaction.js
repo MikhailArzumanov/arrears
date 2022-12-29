@@ -42,7 +42,6 @@ async function save(){
         response = await MagistersService.redactAsAdministrator(magister);
     else response = await MagistersService.redactEntry(magister);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 

@@ -29,7 +29,6 @@ async function save(){
     let faculty = new Faculty(id,login,password,name,shortName);
     let response = await FacultiesService.redactAsAdministrator(faculty);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 

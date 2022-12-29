@@ -31,7 +31,6 @@ async function deleteDepartment(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function redactDepartment(id){
@@ -90,7 +89,6 @@ function getFacultyId(){
 }
 
 async function addDepartment(){
-    console.log('addition attempt');
     let facultyId = getFacultyId();
     let department = new Department(null,'','','%%%','%', facultyId);
     let response;
@@ -136,7 +134,7 @@ async function init(){
             showError('Ошибка типа авторизации', errorBar);
             return;
     }
-    let departments = await DepartmentsService.getAll(facultyId);
+    let departments = await DepartmentsService.getList(facultyId);
     departments.sort((a, b) => a.id-b.id);
     for(let department of departments){
         let id          = department.id;

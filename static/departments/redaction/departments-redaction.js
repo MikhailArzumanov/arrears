@@ -39,7 +39,6 @@ async function save(){
         response = await DepartmentsService.redactAsAdministrator(department);
     else response = await DepartmentsService.redactDepartment(department);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    console.log(response);
     showError('Запись была успешно отредактирована', errorBar);
 }
 

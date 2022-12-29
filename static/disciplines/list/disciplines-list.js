@@ -30,7 +30,6 @@ let additionRow;
 let errorBar;
 
 async function addEntry(){
-    console.log('addition attempt');
     if(getSheetTypes.includes(authType)) return;
     let discipline = new Discipline(null,'%%%','%','зачет',firstYear.toString(),'осенний');
     let response;
@@ -74,7 +73,6 @@ async function deleteDiscipline(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function getGroupsCol(groupsNames){

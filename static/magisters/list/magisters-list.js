@@ -39,7 +39,6 @@ async function getDepartmentId(){
 }
 
 async function addEntry(){
-    console.log('addition attempt');
     let departmentId = await getDepartmentId();
     if(departmentId == null) return;
     let magister = new Magister(null,'','','%%%', '%%%', '%%%', departmentId);
@@ -81,7 +80,6 @@ async function deleteMagister(event){
     if(response == null){ showError(ErrorsService.getLastError(), errorBar); return;}
     let tableRow = element.parentNode.parentNode;
     table.removeChild(tableRow);
-    console.log(element);
 }
 
 function getTableRow(id, surname, name, patronymicName, departmentName, facultyName){
