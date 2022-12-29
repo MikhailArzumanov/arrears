@@ -4,8 +4,8 @@ using System.Security.Cryptography;
 namespace arrearsApi5_0.Utils{
     public static class PasswordHasher{
         public static string Hash(string password){
-            //В данной реализации plain,
-			//Добавьте алгоритм хеширования
+            //В данном заполнителе plain,
+			//Добавьте свой алгоритм хеширования
             return password == "" ? "_" : password;
         }
 
