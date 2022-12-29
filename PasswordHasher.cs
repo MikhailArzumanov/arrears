@@ -6,7 +6,7 @@ namespace arrearsApi5_0.Utils{
         public static string Hash(string password){
             //В данной реализации plain,
 			//Добавьте алгоритм хеширования
-            return password;
+            return password == "" ? "_" : password;
         }
 
         public static bool Verify(string password, string hashedPassword){
