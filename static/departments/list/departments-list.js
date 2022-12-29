@@ -134,7 +134,7 @@ async function init(){
             showError('Ошибка типа авторизации', errorBar);
             return;
     }
-    let departments = await DepartmentsService.getAll(facultyId);
+    let departments = await DepartmentsService.getList(facultyId);
     departments.sort((a, b) => a.id-b.id);
     for(let department of departments){
         let id          = department.id;

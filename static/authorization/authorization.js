@@ -51,6 +51,7 @@ async function login(){
             break;
         case 'administrator':
             response = await AdministratorService.login(login, password);
+            break;
         default:
             showError("Ошибка типа авторизации", errorBar);
     }

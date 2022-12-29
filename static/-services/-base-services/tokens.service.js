@@ -8,7 +8,8 @@ export class TokensService{
         let type     = authResponse.type;
         let dataObj  = authResponse[type];
 
-        this.setDataToStorage(TOKEN_KEY,              token);
+        sessionStorage.setItem(TOKEN_KEY, token);
+        
         this.setDataToStorage(AUTHORIZATION_DATA_KEY, authData);
         this.setDataToStorage(AUTH_DATA_TYPE_KEY,     type);
         this.setDataToStorage(type,                   dataObj);
