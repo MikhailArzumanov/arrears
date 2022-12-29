@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
@@ -40,12 +41,14 @@ namespace arrearsApi5_0.Controllers{
             return Ok(new { token = token, authData = data, type=AUTH_TYPE, faculty=entry });
         }
 
+        [Authorize]
         [HttpGet("all")]
         public IActionResult GetAll() {
             var faculties = db.Faculties;
             return Ok(faculties);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] FacultyRedactionRequest request){
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
@@ -62,13 +65,15 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(previous);
         }
-        
+
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public IActionResult GetConcrete([FromRoute] int id){
             var faculty = db.Faculties.FirstOrDefault(x => x.Id == id);
             return Ok(FullFaculty.fromDefault(faculty));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullFaculty request){
             var previous = db.Faculties.FirstOrDefault(x => x.Id == id);
@@ -82,6 +87,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(previous);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("admin/add")]
         public IActionResult AddEntry([FromBody] FullFaculty faculty){
             var LoginGen = new LoginGen();
@@ -95,6 +101,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(faculty);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveEntry([FromRoute] int id){
             var faculty = db.Faculties.FirstOrDefault(x => x.Id == id);

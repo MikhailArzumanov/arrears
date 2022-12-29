@@ -45,6 +45,9 @@ namespace arrearsApi5_0{
                    };
                });
 
+
+
+
             services.AddMvc().AddNewtonsoftJson(options => {
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -67,6 +70,7 @@ namespace arrearsApi5_0{
 
             app.UseRouting();
             app.UseCors();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>{
                 endpoints.MapControllers();

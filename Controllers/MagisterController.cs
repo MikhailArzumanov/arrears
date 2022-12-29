@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
 using arrearsApi5_0.Data;
@@ -41,6 +42,8 @@ namespace arrearsApi5_0.Controllers{
             var token = TokenHandler.BuildToken(new string[] { TOKEN_TYPE }, config);
             return Ok(new { token = token, authData = data, type=AUTH_TYPE, magister=entry });
         }
+
+        [Authorize]
         [HttpGet("by_department")]
         public IActionResult GetFirstByDepartment([FromQuery] int departmentId){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.DepartmentId == departmentId);
@@ -48,6 +51,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(magister);
         }
 
+        [Authorize]
         [HttpGet("list")]
         public IActionResult GetList([FromQuery] int facultyId, [FromQuery] int departmentId,
                                      [FromQuery] string searchSurname, [FromQuery] string searchName, [FromQuery] string searchPatronymicName,
@@ -63,8 +67,8 @@ namespace arrearsApi5_0.Controllers{
             if(pageNum != 0) magisters = magisters.Skip((pageNum - 1) * pageSize).Take(pageSize).ToArray();
             return Ok(new { magisters = magisters, pagesAmount = pagesAmount });
         }
-        
-        
+
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetConcreteTruncated([FromRoute] int id){
             var magister = db.Magisters.FirstOrDefault(x => x.Id == id);
@@ -72,6 +76,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(magister);
         }
 
+        [Authorize]
         [HttpPost("{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -80,6 +85,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(FullMagister.fromDefault(magister));
         }
 
+        [Authorize]
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] MagisterRedactionRequest request, [FromQuery] string authType){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == request.magisterData.DepartmentId);
@@ -96,6 +102,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] MagisterRedactionRequest request, [FromQuery] string authType){
             var previous = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -124,7 +131,8 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(previous);
         }
-        
+
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -136,12 +144,14 @@ namespace arrearsApi5_0.Controllers{
             return Ok(magister);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public IActionResult GetConcreteAsAdministrator([FromRoute] int id){
             var magister = db.Magisters.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
             return Ok(FullMagister.fromDefault(magister));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullMagister request){
             var previous = db.Magisters.FirstOrDefault(x => x.Id == id);
@@ -159,6 +169,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(previous);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] FullMagister magister){
             var isDepartmentIdValid = db.Departments.Any(x => x.Id == magister.DepartmentId);
@@ -173,6 +184,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             var department = db.Magisters.FirstOrDefault(x => x.Id == id);

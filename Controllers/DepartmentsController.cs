@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
@@ -42,6 +43,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(new { token = token, authData = data, type = AUTH_TYPE, department = entry });
         }
 
+        [Authorize]
         [HttpGet("list")]
         public IActionResult GetList([FromQuery] int facultyId) {
             var departments = db.Departments.Include(x => x.Faculty).ToArray();
@@ -49,7 +51,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(departments);
         }
 
-
+        [Authorize]
         [HttpPost("get/{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -61,12 +63,15 @@ namespace arrearsApi5_0.Controllers{
             return Ok(FullDepartment.fromDefault(department));
         }
 
+        [Authorize]
         [HttpGet("by_faculty")]
         public IActionResult GetFirstByFaculty([FromQuery] int facultyId){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.FacultyId == facultyId);
             if (department == null) return NotFound(FACULTY_HAS_NO_DEPARTMENTS);
             return Ok(department);
         }
+
+        [Authorize]
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] DepartmentRedactionRequest request){
             var faculty = db.Faculties.FirstOrDefault(x => x.Id == request.departmentData.FacultyId);
@@ -84,6 +89,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] DepartmentRedactionRequest request, [FromQuery] string authType){
             var previous = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -103,7 +109,8 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(previous);
         }
-        
+
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id, [FromBody] AuthData authData){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -116,13 +123,15 @@ namespace arrearsApi5_0.Controllers{
             return Ok(department);
         }
 
-        
+
+        [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public IActionResult GetConcreteAsAdministartor([FromRoute] int id, [FromQuery] string authType){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == id);
             return Ok(FullDepartment.fromDefault(department));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullDepartment request){
             var previous = db.Departments.FirstOrDefault(x => x.Id == id);
@@ -139,6 +148,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(previous);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] FullDepartment department){
             var isFacultyValid = db.Faculties.Any(x => x.Id == department.FacultyId);
@@ -153,6 +163,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             var department = db.Departments.FirstOrDefault(x => x.Id == id);

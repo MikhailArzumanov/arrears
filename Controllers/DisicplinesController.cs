@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
@@ -32,6 +33,7 @@ namespace arrearsApi5_0.Controllers{
         //    return Ok(discipline);
         //}
 
+        [Authorize]
         [HttpGet("list")]
         public IActionResult GetList([FromQuery] int groupId, [FromQuery] string searchVal,
                                      [FromQuery] string year, [FromQuery] string semestr, [FromQuery] string type,
@@ -47,13 +49,15 @@ namespace arrearsApi5_0.Controllers{
             if(pageNum != 0) disciplines = disciplines.Skip((pageNum - 1) * pageSize).Take(pageSize).ToArray();
             return Ok(new { disciplines = disciplines, pagesAmount = pagesAmount });
         }
-        
+
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetConcrete([FromRoute] int id){
             var discipline = db.Disciplines.Include(x => x.Groups).Include(x => x.Magisters).FirstOrDefault(x => x.Id == id);
             return Ok(discipline);
         }
 
+        [Authorize]
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] DisciplineRedactionRequest request){
             var groups    = db.Groups.Where(   x => request.groupsIds.Contains(   x.Id)).ToList();
@@ -65,6 +69,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(request.discipline);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] DisciplineRedactionRequest request){
             var previous = db.Disciplines.Include(x => x.Groups).Include(x => x.Magisters).FirstOrDefault(x => x.Id == id);
@@ -82,7 +87,8 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(previous);
         }
-        
+
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id){
             if (db.ArrearSheets.Any(x => x.DisciplineId == id))
@@ -94,12 +100,14 @@ namespace arrearsApi5_0.Controllers{
             return Ok(discipline);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public IActionResult GetConcreteAsAdministrator([FromRoute] int id){
             var discipline = db.Disciplines.Include(x => x.Groups).Include(x => x.Magisters).FirstOrDefault(x => x.Id == id);
             return Ok(discipline);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] DisciplineRedactionRequest request){
             var previous = db.Disciplines.Include(x => x.Groups).Include(x => x.Magisters).FirstOrDefault(x => x.Id == id);
@@ -118,6 +126,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(previous);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] DisciplineRedactionRequest request){
             var groups = db.Groups.Where(x => request.groupsIds.Contains(x.Id)).ToList();
@@ -129,6 +138,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(request.discipline);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             if (db.ArrearSheets.Any(x => x.DisciplineId == id))

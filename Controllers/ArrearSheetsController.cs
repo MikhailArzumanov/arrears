@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
 using arrearsApi5_0.Data;
@@ -46,6 +47,7 @@ namespace arrearsApi5_0.Controllers{
             this.config = config;
         }
 
+        [Authorize]
         [HttpGet("list")]
         public IActionResult GetList([FromQuery] int facultyId, [FromQuery] int departmentId, [FromQuery] int groupId,
                                      [FromQuery] string studentSurname, [FromQuery] string disciplineName, [FromQuery] string magisterSurname,
@@ -70,7 +72,8 @@ namespace arrearsApi5_0.Controllers{
             if(pageNum != 0) arrearSheets = arrearSheets.Skip((pageNum - 1) * pageSize).Take(pageSize).ToArray();
             return Ok(new { arrears = arrearSheets, pagesAmount = pagesAmount });
         }
-        
+
+        [Authorize]
         [HttpPost("{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group)
@@ -81,6 +84,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(arrearSheet);
         }
 
+        [Authorize]
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] ArrearSheetRedactionRequest request, [FromQuery] string authType){
             var student = db.Students.Include(x => x.Group).ThenInclude(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == request.arrearSheetData.StudentId);
@@ -103,6 +107,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] ArrearSheetRedactionRequest request, [FromQuery] string authType){
             var previous = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group).ThenInclude(x => x.Department).ThenInclude(x => x.Faculty)
@@ -132,7 +137,8 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(previous);
         }
-        
+
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group).ThenInclude(x => x.Department).ThenInclude(x => x.Faculty)
@@ -146,6 +152,8 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(arrearSheet);
         }
+
+        [Authorize]
         [HttpPut("confirm/{id}")]
         public IActionResult ConfirmArrearSheet([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group)
@@ -163,6 +171,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("mark/{id}")]
         public IActionResult MarkArrear([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType, [FromQuery] string mark){
             var arrearSheet = db.ArrearSheets.Include(x => x.Magister).ThenInclude(x => x.Department)
@@ -188,6 +197,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("close/{id}")]
         public IActionResult CloseArrear([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group).ThenInclude(x => x.Department)
@@ -206,7 +216,8 @@ namespace arrearsApi5_0.Controllers{
 
 
 
-        
+
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/confirm/{id}")]
         public IActionResult ConfirmArrearSheetAsAdministrator([FromRoute] int id){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group)
@@ -220,6 +231,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/mark/{id}")]
         public IActionResult MarkArrearAsAdministrator([FromRoute] int id, [FromQuery] string mark){
             var arrearSheet = db.ArrearSheets.Include(x => x.Magister).ThenInclude(x => x.Department)
@@ -243,6 +255,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/close/{id}")]
         public IActionResult CloseArrearAsAdministrator([FromRoute] int id){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group).ThenInclude(x => x.Department)
@@ -256,6 +269,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public IActionResult GetConcreteAsAdministrator([FromRoute] int id){
             var arrearSheet = db.ArrearSheets.Include(x => x.Student).ThenInclude(x => x.Group).ThenInclude(x => x.Department).ThenInclude(x => x.Faculty)
@@ -263,6 +277,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(arrearSheet);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] ArrearSheet request){
             var previous = db.ArrearSheets.FirstOrDefault(x => x.Id == id);
@@ -285,6 +300,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(previous);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] ArrearSheet arrearSheet){
             var isStudentIdValid = db.Students.Any(x => x.Id == arrearSheet.StudentId);
@@ -303,6 +319,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             var arrearSheet = db.ArrearSheets.FirstOrDefault(x => x.Id == id);

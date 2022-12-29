@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using arrearsApi5_0.Models;
 using arrearsApi5_0.Data;
@@ -40,6 +41,8 @@ namespace arrearsApi5_0.Controllers{
             var token = TokenHandler.BuildToken(new string[] { TOKEN_TYPE }, config);
             return Ok(new { token = token, authData = data, type= AUTH_TYPE, group=entry });
         }
+
+        [Authorize]
         [HttpGet("by_department")]
         public IActionResult GetFirstByDepartment([FromQuery] int departmentId){
             var group = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.DepartmentId == departmentId);
@@ -47,6 +50,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(group);
         }
 
+        [Authorize]
         [HttpGet("list")]
         public IActionResult GetList([FromQuery] int facultyId, [FromQuery] int departmentId, [FromQuery] string searchVal, 
                                      [FromQuery] int pageNum = 1, [FromQuery] int pageSize = 20) {
@@ -60,13 +64,15 @@ namespace arrearsApi5_0.Controllers{
             return Ok(new { groups = groups, pagesAmount = pagesAmount });
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetConcreteTruncated([FromRoute] int id){
             var group = db.Groups.FirstOrDefault(x => x.Id == id);
             if (group == null) return NotFound(ID_NOT_FOUND);
             return Ok(group);
         }
-        
+
+        [Authorize]
         [HttpPost("{id}")]
         public IActionResult GetConcrete([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var group = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -75,6 +81,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(FullGroup.fromDefault(group));
         }
 
+        [Authorize]
         [HttpPost("add")]
         public IActionResult AddEntry([FromBody] GroupRedactionRequest request, [FromQuery] string authType){
             var department = db.Departments.Include(x => x.Faculty).FirstOrDefault(x => x.Id == request.groupData.DepartmentId);
@@ -91,6 +98,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult RedactEntry([FromRoute] int id, [FromBody] GroupRedactionRequest request, [FromQuery] string authType){
             var previous = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -115,7 +123,8 @@ namespace arrearsApi5_0.Controllers{
             db.SaveChanges();
             return Ok(previous);
         }
-        
+
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult RemoveEntry([FromRoute] int id, [FromBody] AuthData authData, [FromQuery] string authType){
             var group = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
@@ -127,12 +136,14 @@ namespace arrearsApi5_0.Controllers{
             return Ok(group);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public IActionResult GetConcreteAsAdministrator([FromRoute] int id){
             var group = db.Groups.Include(x => x.Department).ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
             return Ok(FullGroup.fromDefault(group));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("admin/{id}")]
         public IActionResult RedactAsAdministrator([FromRoute] int id, [FromBody] FullGroup request){
             var previous = db.Groups.FirstOrDefault(x => x.Id == id);
@@ -148,6 +159,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(previous);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("admin/add")]
         public IActionResult AddAsAdministrator([FromBody] FullGroup group){
             var isDepartmentIdValid = db.Departments.Any(x => x.Id == group.DepartmentId);
@@ -162,6 +174,7 @@ namespace arrearsApi5_0.Controllers{
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public IActionResult RemoveAsAdministrator([FromRoute] int id){
             var group = db.Groups.FirstOrDefault(x => x.Id == id);
