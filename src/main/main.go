@@ -166,16 +166,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	handleFileRequest(w, relpath, r)
 }
 
-const (
-	PROTOCOL = "https://"
-	DOMAIN   = "localhost"
-	PORT     = ":443"
-)
+// const (
+// 	PROTOCOL = "https://"
+// 	DOMAIN   = "localhost"
+// 	PORT     = ":443"
+// )
 
-func redirectHandler(w http.ResponseWriter, r *http.Request) {
-	var redirectPath = PROTOCOL + DOMAIN + PORT + r.RequestURI
-	http.Redirect(w, r, redirectPath, http.StatusMovedPermanently)
-}
+// func redirectHandler(w http.ResponseWriter, r *http.Request) {
+// 	var redirectPath = PROTOCOL + DOMAIN + PORT + r.RequestURI
+// 	http.Redirect(w, r, redirectPath, http.StatusMovedPermanently)
+// }
 
 const (
 	HTTP_PORT  = ":80"
@@ -189,26 +189,11 @@ func main() {
 		os.Exit(1)
 	}
 	initProxymap()
-	/*
-			var manager = &autocert.Manager{
-				Cache:      autocert.DirCache("keys-dir"),
-				Prompt:     autocert.AcceptTOS,
-				Email:      "example@example.org",
-				HostPolicy: autocert.HostWhitelist("5.44.41.208", "ocirtyv.ru"),
-			}
 
-		var server = &http.Server{
-			Addr: SERVICE_PORT,
-			//TLSConfig: manager.TLSConfig(),
-			Handler: http.HandlerFunc(handler),
-		}
+	// go func() {
+	// 	http.ListenAndServe(HTTP_PORT, http.HandlerFunc(redirectHandler))
+	// }()
 
-	*/
-	/*
-		go func() {
-			http.ListenAndServe(HTTP_PORT, http.HandlerFunc(redirectHandler))
-		}()
-	*/
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(HTTP_PORT, nil)
 	//http.ListenAndServeTLS(HTTPS_PORT, "../../https/localhost.crt", "../../https/localhost.key", nil)
