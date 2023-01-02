@@ -7,6 +7,7 @@ import { fadeIn } from "../../-functions/fade.js";
 import { fillDepartments, fillFaculties } from "../../-functions/fillSelects.js";
 import { fillTableData } from "../../-functions/fillTableData.js";
 import { redirect } from "../../-functions/redirect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 import { setDisable } from "../../-functions/setDisabled.js";
 import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 import { showError } from "../../-functions/showError.js";
@@ -19,6 +20,7 @@ import { GroupsService } from "../../-services/groups.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить группу';
 const ADDITION_COLUMN_WIDTH      = 6;

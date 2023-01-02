@@ -16,9 +16,11 @@ import { getOptionN, getOptionSame } from "../../-functions/getOption.js";
 import { addColumn } from "../../-functions/addColumn.js";
 import { addButtonColumn } from "../../-functions/addButtonColumn.js";
 import { clearSelect } from "../../-functions/clearSelect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Дисциплина не была выбрана';
 

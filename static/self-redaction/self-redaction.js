@@ -17,7 +17,7 @@ let errorBar;
 
 redirectIfIsntAuthorized();
 init();
-setTimeout(fadeIn,400);
+setTimeout(fadeIn, 1200);
 
 function init(){
     authorizedType = AuthorizedService.getAuthorizedType;

@@ -13,9 +13,11 @@ import { fillRequiredSelect } from "../../-functions/fillSelect.js";
 import { clearSelect } from "../../-functions/clearSelect.js";
 import { setDisable } from "../../-functions/setDisabled.js";
 import { setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
-fadeIn();
+setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const DISCIPLINE_WAS_NOT_CHOOSEN = 'Дисциплина не была выбрана.';
 

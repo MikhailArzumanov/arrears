@@ -4,6 +4,7 @@ import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
 import { fillTableData } from "../../-functions/fillTableData.js";
 import { redirect } from "../../-functions/redirect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 import { showError } from "../../-functions/showError.js";
 import { Faculty } from "../../-models/faculty.model.js";
 import { ErrorsService } from "../../-services/-base-services/errors.service.js";
@@ -11,6 +12,7 @@ import { FacultiesService } from "../../-services/faculties.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить институт';

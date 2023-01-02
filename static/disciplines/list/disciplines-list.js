@@ -16,10 +16,11 @@ import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { clearSelect } from "../../-functions/clearSelect.js";
 import { fillDepartments, fillFaculties, fillGroups } from "../../-functions/fillSelects.js";
 import { fillTableData } from "../../-functions/fillTableData.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
-
+redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить дисциплину';
 const ADDITION_COLUMN_WIDTH      = 9;

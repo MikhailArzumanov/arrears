@@ -1,5 +1,6 @@
 import { fadeIn } from "../../-functions/fade.js";
 import { redirect } from "../../-functions/redirect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 import { setDisable } from "../../-functions/setDisabled.js";
 import { setOnClick } from "../../-functions/setHandler.js";
 import { showError } from "../../-functions/showError.js";
@@ -10,6 +11,7 @@ import { FacultiesService } from "../../-services/faculties.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Институт не был выбран';
 
@@ -77,7 +79,7 @@ async function init(){
 
     let response = await FacultiesService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    
+
     fillFields(response);
     setOnClick('saveButton', save);
     setOnClick('deleteButton',deleteFaculty);

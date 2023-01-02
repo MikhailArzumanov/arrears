@@ -12,7 +12,7 @@ import { AdministratorService } from "../-services/administrators.service.js";
 import { setOnClick } from "../-functions/setHandler.js";
 
 
-fadeIn();
+setTimeout(fadeIn, 1200);
 
 document.addEventListener('keydown', (event)=>{
     if(event.code == "Enter") login();

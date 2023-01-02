@@ -4,6 +4,7 @@ import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
 import { fillTableData } from "../../-functions/fillTableData.js";
 import { redirect } from "../../-functions/redirect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 import { showError } from "../../-functions/showError.js";
 import { Department } from "../../-models/department.model.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
@@ -12,7 +13,7 @@ import { DepartmentsService } from "../../-services/departments.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
-
+redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить кафедру';
 const ADDITION_COLUMN_WIDTH      = 5;

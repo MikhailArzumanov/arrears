@@ -13,9 +13,11 @@ import { setDisable } from "../../-functions/setDisabled.js";
 import { fillRequiredSelect } from "../../-functions/fillSelect.js";
 import { getOptionN, getOptionSN } from "../../-functions/getOption.js";
 import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Запись студента не была выбрана';
 

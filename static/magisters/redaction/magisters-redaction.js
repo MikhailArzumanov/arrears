@@ -12,9 +12,11 @@ import { getOptionSN } from "../../-functions/getOption.js";
 import { clearSelect } from "../../-functions/clearSelect.js";
 import { setDisable } from "../../-functions/setDisabled.js";
 import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Запись преподавателя не была выбрана';
 
@@ -129,7 +131,7 @@ async function init(){
     //authorizedData = AuthorizedService.getAuthorizedData;
 
     errorBar = document.getElementsByTagName('error-bar')[0];
-    
+
     id = sessionStorage.getItem('magisterId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);

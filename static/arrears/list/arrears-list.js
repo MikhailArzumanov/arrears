@@ -13,9 +13,11 @@ import { getOptionModel, getOptionSame } from "../../-functions/getOption.js";
 import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 import { fillTableData } from "../../-functions/fillTableData.js";
 import { fillDepartments, fillFaculties, fillGroups } from "../../-functions/fillSelects.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const confirmSheetTypes = ['faculty'];
 const deleteSheetTypes  = ['student','group','faculty'];

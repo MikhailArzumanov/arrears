@@ -9,9 +9,11 @@ import { DepartmentsService } from "../../-services/departments.service.js";
 import { Group } from "../../-models/group.model.js";
 import { GroupsService } from "../../-services/groups.service.js";
 import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Группа не была выбрана';
 
@@ -136,7 +138,7 @@ async function init(){
         //setTimeout(() => redirect('/groups/list'), 1200);
         return;
     }
-    
+
     let response;
     if(authType == "admin")
         response = await GroupsService.getConcreteAsAdministrator(id);
