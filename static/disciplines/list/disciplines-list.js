@@ -24,6 +24,7 @@ redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить дисциплину';
 const ADDITION_COLUMN_WIDTH      = 9;
+const AUTH_TYPE_ERROR = 'Ошибка типа авторизации';
 
 const getSheetTypes = ['group', 'student'];
 const firstYear = 2018;
@@ -267,7 +268,7 @@ async function init(){
             groupId      = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
 

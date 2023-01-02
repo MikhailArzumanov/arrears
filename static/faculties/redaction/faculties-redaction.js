@@ -14,6 +14,8 @@ setTimeout(fadeIn, 1200);
 redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Институт не был выбран';
+const REDACTION_SUCCESS = 'Запись была успешно отредактирована';
+const DELETION_SUCCESS = 'Запись была успешно удалена';
 
 let id;
 let errorBar;
@@ -33,7 +35,7 @@ async function save(){
     let faculty = new Faculty(id,login,password,name,shortName);
     let response = await FacultiesService.redactAsAdministrator(faculty);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно отредактирована', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 async function deleteFaculty(){
@@ -42,7 +44,7 @@ async function deleteFaculty(){
     if(!answer) return;
     let response = await FacultiesService.deleteFaculty(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно удалена', errorBar);
+    showError(DELETION_SUCCESS, errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('facultyId');
         redirect('/faculties/list');

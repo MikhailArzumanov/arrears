@@ -20,6 +20,9 @@ setTimeout(fadeIn, 1200);
 redirectIfIsntAuthorized();
 
 const DISCIPLINE_WAS_NOT_CHOOSEN = 'Дисциплина не была выбрана.';
+const CHOOSE_MAGISTER = 'Выберите преподавателя.';
+const CHOOSE_STUDENT = 'Выберите студента.';
+const ADDITION_SUCCESS = 'Лист был успешно добавлен.';
 
 let errorBar;
 
@@ -69,9 +72,9 @@ async function filterStudents(){
 
 async function saveEntry(){
     let magisterId = getValueById('magisterField');
-    if(magisterId == 0){showError('Выберите преподавателя.',errorBar);return;}
+    if(magisterId == 0){showError(CHOOSE_MAGISTER,errorBar);return;}
     let studentId  = getValueById('studentField');
-    if(magisterId == 0){showError('Выберите студента.',errorBar);return;}
+    if(magisterId == 0){showError(CHOOSE_STUDENT,errorBar);return;}
     let arrear = new Arrear(0,0,0,0,magisterId,disciplineId,studentId)
     let response;
     if(authType == "admin")
@@ -79,7 +82,7 @@ async function saveEntry(){
     else response = await ArrearsService.addEntry(arrear);
     if(response == null) showError(ErrorsService.getLastError(),errorBar)
     else {
-        showError('Лист был успешно добавлен.', errorBar);
+        showError(ADDITION_SUCCESS, errorBar);
         sessionStorage.removeItem('disciplineId');
         setTimeout(()=>redirect('/arrears/list'),400);
     }

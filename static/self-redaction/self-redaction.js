@@ -1,6 +1,7 @@
 import { fadeIn } from "../-functions/fade.js";
 import { redirect } from "../-functions/redirect.js";
 import { ADDRESS, redirectIfIsntAuthorized } from "../-functions/redirection.js";
+import { setOnClick } from "../-functions/setHandler.js";
 import { showError } from "../-functions/showError.js";
 import { getValueById } from "../-functions/valById.js";
 import { AuthData } from "../-models/auth-data.model.js";
@@ -15,48 +16,50 @@ import { StudentsService } from "../-services/students.service.js";
 let authorizedType;
 let errorBar;
 
+const PASSWORDS_DOESNT_MATCH = "Поля нового пароля не совпадают";
+const CONSOLE_AUTH_TYPE_ERROR = "Auth type error";
+const REDACTION_SUCCESS = "Редактирование прошло успешно.";
+
+let annotationMap = {
+    "admin":      "",
+    "faculty":    "зайдите как администратор",
+    "department": "зайдите под именем института",
+    "group":      "обратитесь к представителям кафедры",
+    "magister":   "зайдите под именем кафедры",
+    "student":    "обратитесь к старосте группы",
+}
+
 redirectIfIsntAuthorized();
 init();
 setTimeout(fadeIn, 1200);
 
+
 function init(){
     authorizedType = AuthorizedService.getAuthorizedType;
     let authorizedData = AuthorizedService.getAuthorizedData;
-    let annotation = "";
-    let logAnnotation = "";
+    let annotation = annotationMap[authorizedType];
+    let redactingAnnotation = "";
     switch(authorizedType){
         case "admin":
             redirect(ADDRESS);
             break;
         case "faculty":
-            annotation += "зайдите как администратор";
-            logAnnotation += authorizedData.name;
-            break;
         case "department":
-            annotation += "зайдите под именем института";
-            logAnnotation += authorizedData.name;
-            break;
         case "group":
-            annotation += "обратитесь к представителям кафедры";
-            logAnnotation += authorizedData.name;
+            redactingAnnotation += authorizedData.name;
             break;
         case "magister":
-            annotation += "зайдите под именем кафедры";
-            logAnnotation += `${authorizedData.surname} ${authorizedData.name} ${authorizedData.patronymicName}`;
-            break;
         case "student":
-            annotation += "обратитесь к старосте группы";
-            logAnnotation += `${authorizedData.surname} ${authorizedData.name} ${authorizedData.patronymicName}`;
+            redactingAnnotation += `${authorizedData.surname} ${authorizedData.name} ${authorizedData.patronymicName}`;
             break;
         default:
-            console.log("Authorized type error");
+            console.log(CONSOLE_AUTH_TYPE_ERROR);
     }
-    let logAnnotationBlock = document.getElementById('redacting');
-    logAnnotationBlock.innerHTML += logAnnotation + "'.";
+    let redactingAnnotationBlock = document.getElementById('redacting');
+    redactingAnnotationBlock.innerHTML += redactingAnnotation + "'.";
     let annotationBlock = document.getElementById('annotation');
     annotationBlock.innerHTML += annotation + ".";
-    let confirmButton = document.getElementById('confirmBtn');
-    confirmButton.onclick = confirm;
+    setOnClick('confirmBtn',confirm);
     errorBar = document.getElementsByTagName('error-bar')[0];
 }
 
@@ -71,7 +74,7 @@ async function confirm(){
     let passConfirm = getValueById("passRepeatField");
 
     if(newPassword != passConfirm) {
-        showError("Поля нового пароля не совпадают", errorBar);
+        showError(PASSWORDS_DOESNT_MATCH, errorBar);
         return;
     }
 
@@ -97,7 +100,7 @@ async function confirm(){
             response = await StudentsService.selfRedact(newAuthData, oldAuthData);
             break;
         default:
-            console.log("Authorized type error");
+            console.log(CONSOLE_AUTH_TYPE_ERROR );
     }
     if(response == null){
         let errorText = ErrorsService.getLastError();
@@ -105,7 +108,7 @@ async function confirm(){
         return;
     }
 
-    showError('Редактирование прошло успешно.', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 

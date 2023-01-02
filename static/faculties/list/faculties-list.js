@@ -16,7 +16,7 @@ redirectIfIsntAuthorized();
 
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить институт';
-const  ADDITION_COLUMN_WIDTH     = 4;
+const ADDITION_COLUMN_WIDTH      = 4;
 
 let table;
 let additionRow;

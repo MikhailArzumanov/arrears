@@ -14,6 +14,11 @@ import { setOnClick } from "../-functions/setHandler.js";
 
 setTimeout(fadeIn, 1200);
 
+const CHOOSE_AUTH_TYPE = "Выберите тип авторизации.";
+const AUTH_TYPE_ERROR = "Ошибка типа авторизации.";
+const INCORRECT_DATA = "Введённые данные некорректны.";
+const INTERNAL_ERROR = "Внутренняя ошибка.";
+
 document.addEventListener('keydown', (event)=>{
     if(event.code == "Enter") login();
     else if(event.code == "ArrowDown"
@@ -30,7 +35,7 @@ async function login(){
     let login    = getValById('loginField');
     let password = getValById('passwordField');
     let type     = getValById('typeField');
-    if(type == 0) {showError("Выберите тип авторизации", errorBar); return;}
+    if(type == 0) {showError(CHOOSE_AUTH_TYPE, errorBar); return;}
     
     let response
 
@@ -54,19 +59,17 @@ async function login(){
             response = await AdministratorService.login(login, password);
             break;
         default:
-            showError("Ошибка типа авторизации", errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
     }
 
     if(response == null){
-        showError("Введённые данные некорректны", errorBar);
+        showError(INCORRECT_DATA, errorBar);
     }
     else if(!!response){
         TokensService.setAuthData(response);
         redirect("/");
     }
-    else{
-        console.log('Auth type error.');
-    }
+    else showError(INTERNAL_ERROR, errorBar);
 }
 
 function changeFocus(){

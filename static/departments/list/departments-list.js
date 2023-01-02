@@ -17,6 +17,7 @@ redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить кафедру';
 const ADDITION_COLUMN_WIDTH      = 5;
+const AUTH_TYPE_ERROR = "Ошибка типа авторизации.";
 
 let table;
 let type;
@@ -120,7 +121,7 @@ async function init(){
             facultyId = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
     await fillTable(facultyId);

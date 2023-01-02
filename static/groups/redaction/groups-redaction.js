@@ -16,6 +16,8 @@ setTimeout(fadeIn, 1200);
 redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Группа не была выбрана';
+const REDACTION_SUCCESS = 'Запись была успешно отредактирована';
+const DELETION_SUCCESS = 'Запись была успешно удалена';
 
 let id;
 let errorBar;
@@ -42,7 +44,7 @@ async function save(){
         response = await GroupsService.redactAsAdministrator(group);
     else response = await GroupsService.redactEntry(group);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно отредактирована', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 async function deleteEntry(){
@@ -54,7 +56,7 @@ async function deleteEntry(){
         response = await GroupsService.deleteAsAdministartor(id);
     else response = await GroupsService.deleteEntry(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно удалена', errorBar);
+    showError(DELETION_SUCCESS, errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('departmentId');
         redirect('/groups/list');

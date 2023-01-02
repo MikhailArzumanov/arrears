@@ -19,6 +19,8 @@ window.onload = init;
 setTimeout(fadeIn, 1200);
 redirectIfIsntAuthorized();
 
+const AUTH_TYPE_ERROR = 'Ошибка типа авторизации';
+
 const confirmSheetTypes = ['faculty'];
 const deleteSheetTypes  = ['student','group','faculty'];
 const markArrearTypes   = ['magister','faculty'];
@@ -311,7 +313,7 @@ async function init(){
             groupId      = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
     await fillSelects(facultyId, departmentId);

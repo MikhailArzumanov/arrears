@@ -24,6 +24,7 @@ redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить группу';
 const ADDITION_COLUMN_WIDTH      = 6;
+const AUTH_TYPE_ERROR ='Ошибка типа авторизации';
 
 let pageNum = 1;
 let table;
@@ -198,7 +199,7 @@ async function init(){
             departmentId = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
     await fillSelects(facultyId);

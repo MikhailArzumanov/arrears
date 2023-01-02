@@ -23,11 +23,17 @@ setTimeout(fadeIn, 1200);
 redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Дисциплина не была выбрана';
+const REDACTION_SUCCESS = 'Запись была успешно отредактирована';
+const DELETION_SUCCESS = 'Запись была успешно удалена';
+const GROUP_WAS_ALREADY_ADDED = 'Группа уже была добавлена.';
+const MAGISTER_WAS_ALREADY_ADDED = 'Преподаватель уже был добавлен.';
+const CHOOSE_GROUP = 'Выберите группу для добавления.';
+const CHOOSE_MAGISTER = 'Выберите преподавателя для добавления.';
 
 let id;
 let errorBar;
 let authType;
-let authorizedData;
+//let authorizedData;
 
 let groupsTable;
 let groupsFilterLine;
@@ -74,7 +80,7 @@ async function save(){
         response = await DisciplinesService.redactAsAdministrator(discipline,groupsIds,magistersIds);
     else response = await DisciplinesService.redactEntry(discipline,groupsIds,magistersIds);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно отредактирована', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 async function deleteEntry(){
@@ -86,7 +92,7 @@ async function deleteEntry(){
         response = await DisciplinesService.deleteAsAdministartor(id);
     else response = await DisciplinesService.deleteEntry(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно удалена', errorBar);
+    showError(DELETION_SUCCESS, errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('departmentId');
         redirect('/disciplines/list');
@@ -124,7 +130,7 @@ function pushOrNotify(array, val, annotation){
 }
 
 function addGroup(group){
-    let alreadyIn = pushOrNotify(groupsIds, group.id, 'Группа уже была добавлена.');
+    let alreadyIn = pushOrNotify(groupsIds, group.id, GROUP_WAS_ALREADY_ADDED);
     if(alreadyIn) return;
 
     let row = document.createElement('tr');
@@ -136,7 +142,7 @@ function addGroup(group){
 }
 
 function addMagister(magister){
-    let alreadyIn = pushOrNotify(magistersIds, magister.id, 'Преподаватель уже был добавлен.');
+    let alreadyIn = pushOrNotify(magistersIds, magister.id, MAGISTER_WAS_ALREADY_ADDED);
     if(alreadyIn) return;
 
     let magisterFullName = `${magister.surname} ${magister.name} ${magister.patronymicName}`;
@@ -217,7 +223,7 @@ function fillStaticSelects(){
 
 async function addGroupHandler(){
     let groupId = getValueById('groupsSelectField');
-    if(groupId == 0){showError('Выберите группу для добавления.', errorBar); return;}
+    if(groupId == 0){showError(CHOOSE_GROUP, errorBar); return;}
     let response;
     if(authType == 'admin') 
         response = await GroupsService.getConcreteAsAdministrator(groupId);
@@ -228,7 +234,7 @@ async function addGroupHandler(){
 
 async function addMagisterHandler(){
     let magisterId = getValueById('magistersSelectField');
-    if(magisterId == 0){showError('Выберите преподавателя для добавления.', errorBar); return;}
+    if(magisterId == 0){showError(CHOOSE_MAGISTER, errorBar); return;}
     let response;
     if(authType == 'admin') 
         response = await MagistersService.getConcreteAsAdministrator(magisterId);
@@ -250,7 +256,7 @@ async function init(){
     fillStaticSelects();
     
     authType       = AuthorizedService.getAuthorizedType;
-    authorizedData = AuthorizedService.getAuthorizedData;
+    //authorizedData = AuthorizedService.getAuthorizedData;
     
     groupsTable      = document.getElementById('groupsList').getElementsByTagName('tbody')[0];
     groupsFilterLine = document.getElementById('groupsFilterLine');

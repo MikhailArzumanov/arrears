@@ -20,6 +20,8 @@ setTimeout(fadeIn, 1200);
 redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Запись студента не была выбрана';
+const REDACTION_SUCCESS = 'Запись была успешно отредактирована';
+const DELETION_SUCCESS = 'Запись была успешно удалена';
 
 let id;
 let errorBar;
@@ -51,7 +53,7 @@ async function save(){
         response = await StudentsService.redactAsAdministrator(student);
     else response = await StudentsService.redactEntry(student);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно отредактирована', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 async function deleteEntry(){
@@ -65,7 +67,7 @@ async function deleteEntry(){
         response = await StudentsService.deleteAsAdministartor(id);
     else response = await StudentsService.deleteEntry(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно удалена', errorBar);
+    showError(DELETION_SUCCESS, errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('departmentId');
         redirect('/students/list');

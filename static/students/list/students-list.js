@@ -25,6 +25,7 @@ redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить студента';
 const ADDITION_COLUMN_WIDTH = 9;
+const AUTH_TYPE_ERROR = 'Ошибка типа авторизации';
 
 let pageNum = 1;
 let table;
@@ -245,7 +246,7 @@ async function init(){
             groupId      = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
     await fillSelects(facultyId, departmentId);
