@@ -57,7 +57,7 @@ async function addEntry(){
     else{
         let tr = getTableRow(response.id, response.surname, response.name, response.patronymicName, 
             response.department.shortName, response.department.faculty.shortName);
-        table.appendChild(tr, additionRow);
+        table.insertBefore(tr, additionRow);
     }
 }
 
