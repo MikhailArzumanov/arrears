@@ -8,11 +8,21 @@ import { AuthorizedService } from "../../-services/-base-services/authorized.ser
 import { ErrorsService } from "../../-services/-base-services/errors.service.js";
 import { ArrearsService } from "../../-services/arrears.service.js";
 import { redirect } from "../../-functions/redirect.js";
+import { getOption } from "../../-functions/getOption.js";
+import { fillRequiredSelect } from "../../-functions/fillSelect.js";
+import { clearSelect } from "../../-functions/clearSelect.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
-fadeIn();
+setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const DISCIPLINE_WAS_NOT_CHOOSEN = 'Дисциплина не была выбрана.';
+const CHOOSE_MAGISTER = 'Выберите преподавателя.';
+const CHOOSE_STUDENT = 'Выберите студента.';
+const ADDITION_SUCCESS = 'Лист был успешно добавлен.';
 
 let errorBar;
 
@@ -30,17 +40,10 @@ function getFio(model){
     return `${model.surname} ${model.name[0]}. ${model.patronymicName[0]}.`;
 }
 
-function createOption(text, value){
-    let option = document.createElement('option');
-    option.innerHTML = text;
-    option.value     = value;
-    return option;
-}
-
 function createOptionFIO(model){
     let fio = getFio(model);
     let id  = model.id;
-    return createOption(fio, id);
+    return getOption(fio, id);
 }
 
 function setOneChoosenElementAndDisable(selectId, text, value){
@@ -50,27 +53,16 @@ function setOneChoosenElementAndDisable(selectId, text, value){
     select.disabled = true;
 }
 
-function fillSelect(selectId, dataArray, optionFn){
-    let select = document.getElementById(selectId);
-    for(let element of dataArray)
-        select.appendChild(optionFn(element));
-    
-}
 
 async function fillMagisters(){
     let magisters = discipline.magisters;
-    fillSelect('magisterField', magisters, createOptionFIO);
+    fillRequiredSelect('magisterField', magisters, createOptionFIO);
 }
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
-
 async function fillStudents(){
     let surnameVal = getValueById('studentFilterField');
     let response = await StudentsService.getList(facultyId,departmentId,groupId,surnameVal,'','',0);
     let students = response.students;
-    fillSelect('studentField', students, createOptionFIO);
+    fillRequiredSelect('studentField', students, createOptionFIO);
 }
 
 async function filterStudents(){
@@ -78,15 +70,11 @@ async function filterStudents(){
     await fillStudents();
 }
 
-function setOnClick(controlId, handlerFn){
-    document.getElementById(controlId).onclick = handlerFn;
-}
-
 async function saveEntry(){
     let magisterId = getValueById('magisterField');
-    if(magisterId == 0){showError('Выберите преподавателя.',errorBar);return;}
+    if(magisterId == 0){showError(CHOOSE_MAGISTER,errorBar);return;}
     let studentId  = getValueById('studentField');
-    if(magisterId == 0){showError('Выберите студента.',errorBar);return;}
+    if(magisterId == 0){showError(CHOOSE_STUDENT,errorBar);return;}
     let arrear = new Arrear(0,0,0,0,magisterId,disciplineId,studentId)
     let response;
     if(authType == "admin")
@@ -94,14 +82,10 @@ async function saveEntry(){
     else response = await ArrearsService.addEntry(arrear);
     if(response == null) showError(ErrorsService.getLastError(),errorBar)
     else {
-        showError('Лист был успешно добавлен.', errorBar);
+        showError(ADDITION_SUCCESS, errorBar);
         sessionStorage.removeItem('disciplineId');
         setTimeout(()=>redirect('/arrears/list'),400);
     }
-}
-
-function setDisabled(id){
-    document.getElementById(id).disabled = true;
 }
 
 let controlsIds = [
@@ -114,7 +98,7 @@ let controlsIds = [
 
 function disableControls(){
     for(let controlId of controlsIds)
-        setDisabled(controlId);
+        setDisable(controlId, true);
 }
 
 async function init(){
@@ -139,8 +123,8 @@ async function init(){
         case 'student':
             let fio = getFio(authorizedData);
             setOneChoosenElementAndDisable('studentField', fio, authorizedData.id);
-            document.getElementById('studentFilterField').disabled = true;
-            document.getElementById('studentFilterBtn').disabled = true;
+            setDisable('studentFilterField', true);
+            setDisable('studentFilterBtn', true);
             break;
         case 'group':
             facultyId    = authorizedData.department.faculty.id;

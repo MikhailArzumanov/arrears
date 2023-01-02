@@ -8,16 +8,22 @@ import { AuthorizedService } from "../../-services/-base-services/authorized.ser
 import { DepartmentsService } from "../../-services/departments.service.js";
 import { Group } from "../../-models/group.model.js";
 import { GroupsService } from "../../-services/groups.service.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Группа не была выбрана';
+const REDACTION_SUCCESS = 'Запись была успешно отредактирована';
+const DELETION_SUCCESS = 'Запись была успешно удалена';
 
 let id;
 let errorBar;
 let authType;
-let authorizedData;
+//let authorizedData;
+
 let fieldsNames = [
     'idField',        
     'facultyField',   
@@ -38,7 +44,7 @@ async function save(){
         response = await GroupsService.redactAsAdministrator(group);
     else response = await GroupsService.redactEntry(group);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно отредактирована', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 async function deleteEntry(){
@@ -50,7 +56,7 @@ async function deleteEntry(){
         response = await GroupsService.deleteAsAdministartor(id);
     else response = await GroupsService.deleteEntry(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно удалена', errorBar);
+    showError(DELETION_SUCCESS, errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('departmentId');
         redirect('/groups/list');
@@ -118,10 +124,15 @@ async function selectFacultyOnChange(event){
 }
 
 async function init(){
-    document.getElementById('facultyField').onchange = selectFacultyOnChange;
+    setOnClick('saveButton',save);
+    setOnClick('deleteButton', deleteEntry);
+    setOnChange('facultyField', selectFacultyOnChange);
+    
     authType       = AuthorizedService.getAuthorizedType;
-    authorizedData = AuthorizedService.getAuthorizedData;
+    //authorizedData = AuthorizedService.getAuthorizedData;
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     id = sessionStorage.getItem('groupId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);
@@ -129,15 +140,13 @@ async function init(){
         //setTimeout(() => redirect('/groups/list'), 1200);
         return;
     }
+
     let response;
     if(authType == "admin")
         response = await GroupsService.getConcreteAsAdministrator(id);
     else response = await GroupsService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
+
     await loadAndFillData(response.department.faculty.id);
     fillFields(response);
-    let saveButton = document.getElementById('saveButton');
-    saveButton.onclick = save;
-    let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteEntry;
 }

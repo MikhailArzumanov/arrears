@@ -1,4 +1,4 @@
 import { fadeIn } from "../-functions/fade.js";
-
-
-fadeIn();
+import { redirectIfIsntAuthorized } from "../-functions/redirection.js";
+setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();

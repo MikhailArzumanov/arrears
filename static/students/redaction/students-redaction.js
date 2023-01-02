@@ -9,16 +9,24 @@ import { DepartmentsService } from "../../-services/departments.service.js";
 import { Student } from "../../-models/student.model.js";
 import { StudentsService } from "../../-services/students.service.js";
 import { GroupsService } from "../../-services/groups.service.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { fillRequiredSelect } from "../../-functions/fillSelect.js";
+import { getOptionN, getOptionSN } from "../../-functions/getOption.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const WAS_NOT_CHOSEN = 'Запись студента не была выбрана';
+const REDACTION_SUCCESS = 'Запись была успешно отредактирована';
+const DELETION_SUCCESS = 'Запись была успешно удалена';
 
 let id;
 let errorBar;
 let authType;
-let authorizedData;
+//let authorizedData;
 
 let fieldsNames = [
     'idField',        
@@ -45,7 +53,7 @@ async function save(){
         response = await StudentsService.redactAsAdministrator(student);
     else response = await StudentsService.redactEntry(student);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно отредактирована', errorBar);
+    showError(REDACTION_SUCCESS, errorBar);
 }
 
 async function deleteEntry(){
@@ -59,7 +67,7 @@ async function deleteEntry(){
         response = await StudentsService.deleteAsAdministartor(id);
     else response = await StudentsService.deleteEntry(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
-    showError('Запись была успешно удалена', errorBar);
+    showError(DELETION_SUCCESS, errorBar);
     setTimeout(()=>{
         sessionStorage.removeItem('departmentId');
         redirect('/students/list');
@@ -75,7 +83,6 @@ function fillFields(student){
     setValueById('nameField',           student.name);
     setValueById('patronymicNameField', student.patronymicName);
     setValueById('loginField',          student.login);
-    //setValueById('passwordField', department.password);
 }
 
 function clearFieldsAndDisableControls(){
@@ -84,50 +91,24 @@ function clearFieldsAndDisableControls(){
         field.value = '';
         field.disabled = true;
     }
-    document.getElementById('saveButton').disabled = true;
-    document.getElementById('deleteButton').disabled = true;
-}
-
-function getOptionSN(snModel){
-    let option = document.createElement('option');
-    option.innerHTML = snModel.shortName;
-    option.value     = snModel.id;
-    return option;
-}
-
-function getOptionN(nModel){
-    let option = document.createElement('option');
-    option.innerHTML = nModel.name;
-    option.value     = nModel.id;
-    return option;
-}
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
-
-function fillSelect(selectId, dataArray, optionFn){
-    let select = document.getElementById(selectId);
-    for(let dataCol of dataArray){
-        let option = optionFn(dataCol);
-        select.appendChild(option);
-    }
+    setDisable('saveButton', true);
+    setDisable('deleteButton', true);
 }
 
 async function loadFaculties(){
     let faculties = await FacultiesService.getAll();
-    fillSelect('facultyField', faculties, getOptionSN);
+    fillRequiredSelect('facultyField', faculties, getOptionSN);
 }
 
 async function loadDepartments(facultyId){
     let departments = await DepartmentsService.getList(facultyId);
-    fillSelect('departmentField', departments, getOptionSN);
+    fillRequiredSelect('departmentField', departments, getOptionSN);
 }
 
 async function loadGroups(facultyId, departmentId){
     let groupsResp = await GroupsService.getList(facultyId,departmentId,'', 0);
     let groups = groupsResp.groups;
-    fillSelect('groupField', groups, getOptionN);
+    fillRequiredSelect('groupField', groups, getOptionN);
 }
 
 async function reloadDepartments(facultyId){
@@ -168,11 +149,16 @@ async function selectFacultyOnChange(event){
 }
 
 async function init(){
-    document.getElementById('facultyField').onchange    = selectFacultyOnChange;
-    document.getElementById('departmentField').onchange = selectDepartmentOnChange;
+    setOnClick('saveButton',save);
+    setOnClick('deleteButton', deleteEntry);
+    setOnChange('facultyField', selectFacultyOnChange);
+    setOnChange('departmentField', selectDepartmentOnChange);
+
     authType       = AuthorizedService.getAuthorizedType;
-    authorizedData = AuthorizedService.getAuthorizedData;
+    //authorizedData = AuthorizedService.getAuthorizedData;
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     id = sessionStorage.getItem('studentId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);
@@ -187,8 +173,4 @@ async function init(){
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
     await loadAndFillData(response.group.department.faculty.id, response.group.department.id);
     fillFields(response);
-    let saveButton = document.getElementById('saveButton');
-    saveButton.onclick = save;
-    let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteEntry;
 }

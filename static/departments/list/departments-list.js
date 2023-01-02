@@ -1,5 +1,10 @@
+import { addButtonColumn } from "../../-functions/addButtonColumn.js";
+import { addColumn } from "../../-functions/addColumn.js";
+import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
+import { fillTableData } from "../../-functions/fillTableData.js";
 import { redirect } from "../../-functions/redirect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
 import { showError } from "../../-functions/showError.js";
 import { Department } from "../../-models/department.model.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
@@ -8,9 +13,11 @@ import { DepartmentsService } from "../../-services/departments.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
-
+redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить кафедру';
+const ADDITION_COLUMN_WIDTH      = 5;
+const AUTH_TYPE_ERROR = "Ошибка типа авторизации.";
 
 let table;
 let type;
@@ -44,43 +51,6 @@ function redactDepartmentHandler(event){
     redactDepartment(id);
 }
 
-function getTableRow(id, name, facultyName){
-    let row = document.createElement('tr');
-    let idCol      = document.createElement('td');
-    let nameCol    = document.createElement('td');
-    let facultyCol = document.createElement('td');
-    let redactCol  = document.createElement('td');
-    let deleteCol  = document.createElement('td');
-    
-    let cols = [idCol, nameCol, facultyCol, redactCol, deleteCol];
-
-    let redactButton = document.createElement('button');
-    redactButton.innerHTML = 'Редактировать';
-    redactButton.setAttribute('departmentId', id);
-    redactButton.onclick = redactDepartmentHandler;
-    let deleteButton = document.createElement('button');
-    deleteButton.innerHTML = 'Удалить';
-    deleteButton.setAttribute('departmentId', id);
-    deleteButton.setAttribute('departmentName', name);
-    deleteButton.onclick = deleteDepartment;
-    
-    idCol.innerHTML = id;
-    nameCol.innerHTML = name;
-    facultyCol.innerHTML = facultyName;
-    redactCol.appendChild(redactButton);
-    deleteCol.appendChild(deleteButton);
-
-    idCol.setAttribute('class',      'idCol');
-    nameCol.setAttribute('class',    'nameCol');
-    facultyCol.setAttribute('class', 'facultyCol');
-    redactCol.setAttribute('class',  'redactCol');
-    deleteCol.setAttribute('class',  'deleteCol');
-
-    for(let col of cols) row.appendChild(col);
-
-    return row;
-}
-
 function getFacultyId(){
     switch(type){
         case 'admin': return 1;
@@ -95,33 +65,53 @@ async function addDepartment(){
     if(type == "admin")
         response = await DepartmentsService.addDepartmentAsAdministrator(department);
     else response = await DepartmentsService.addDepartment(department);
-    if(response == null) showError(ErrorsService.getLastError(), errorBar);
-    else{
-        let tr = getTableRow(response.id, response.shortName, response.faculty.shortName);
-        table.removeChild(additionRow);
-        table.appendChild(tr);
-        table.appendChild(additionRow);
-    }
+    if(response == null) {showError(ErrorsService.getLastError(), errorBar); return}
+    let tr = getTableRow(response.id, response.shortName, response.faculty.shortName);
+    table.insertBefore(tr, additionRow);
 }
 
-function createAdditionRow(){
-    additionRow = document.createElement('tr');
-    let additionCol = document.createElement('td');
-    additionCol.setAttribute('colspan','5');
-    let additionButton = document.createElement('button');
-    additionButton.onclick = addDepartment;
-    additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
-    additionButton.setAttribute('class', 'additionButton');
-    additionCol.appendChild(additionButton);
-    additionRow.appendChild(additionCol);
-    table.appendChild(additionRow);
+function addDepartmentButtonColumn(row, tdClass, buttonInnerHtml, buttonHandler, id, departmentName=null){
+    let attributes = [];
+    attributes.push({key:'departmentId', val:id});
+    if(departmentName) attributes.push({key:'departmentName', val:departmentName});
+    addButtonColumn(row,tdClass,buttonInnerHtml,buttonHandler,attributes);
+}
+
+
+function getTableRow(id, name, facultyName){
+    let row = document.createElement('tr');
+    addColumn(row,id            , 'idCol'     );
+    addColumn(row,name          , 'nameCol'   );
+    addColumn(row,facultyName   , 'facultyCol');
+    
+    addDepartmentButtonColumn(row,'redactCol','Редактировать',redactDepartmentHandler,id);
+    addDepartmentButtonColumn(row,'deleteCol','Удалить',deleteDepartment,id,name);
+
+    row.setAttribute('class', 'dataRow');
+    return row;
+}
+
+function getRowByModel(department){
+    let id          = department.id;
+    let name        = department.shortName;
+    let facultyName = department.faculty.shortName;
+    return getTableRow(id, name, facultyName);
+}
+
+async function fillTable(facultyId){
+    let departments = await DepartmentsService.getList(facultyId);
+    fillTableData(departments, getRowByModel, table, additionRow);
 }
 
 async function init(){
     type = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     table = document.getElementById('departmentsTable');
+    additionRow = createAdditionRow(table, ADDITION_COLUMN_WIDTH, ADDITION_BUTTON_ANNOTATION, addDepartment);
+
     let facultyId;
     switch(type){
         case 'faculty':
@@ -131,20 +121,8 @@ async function init(){
             facultyId = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
-    let departments = await DepartmentsService.getList(facultyId);
-    departments.sort((a, b) => a.id-b.id);
-    for(let department of departments){
-        let id          = department.id;
-        let name        = department.shortName;
-        let facultyName = department.faculty.shortName;
-        let row = getTableRow(id, name, facultyName);
-        table.appendChild(row);
-    }
-    createAdditionRow();
+    await fillTable(facultyId);
 }
-
-
-

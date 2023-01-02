@@ -1,18 +1,30 @@
+import { addButtonColumn } from "../../-functions/addButtonColumn.js";
+import { addColumn } from "../../-functions/addColumn.js";
+import { clearSelect } from "../../-functions/clearSelect.js";
+import { clearTable } from "../../-functions/clearTable.js";
+import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
+import { fillDepartments, fillFaculties } from "../../-functions/fillSelects.js";
+import { fillTableData } from "../../-functions/fillTableData.js";
 import { redirect } from "../../-functions/redirect.js";
+import { redirectIfIsntAuthorized } from "../../-functions/redirection.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 import { showError } from "../../-functions/showError.js";
 import { getValueById } from "../../-functions/valById.js";
 import { Group } from "../../-models/group.model.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
 import { ErrorsService } from "../../-services/-base-services/errors.service.js";
 import { DepartmentsService } from "../../-services/departments.service.js";
-import { FacultiesService } from "../../-services/faculties.service.js";
 import { GroupsService } from "../../-services/groups.service.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
+redirectIfIsntAuthorized();
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить группу';
+const ADDITION_COLUMN_WIDTH      = 6;
+const AUTH_TYPE_ERROR ='Ошибка типа авторизации';
 
 let pageNum = 1;
 let table;
@@ -82,60 +94,25 @@ async function deleteGroup(event){
     table.removeChild(tableRow);
 }
 
+function addGroupButtonColumn(row, tdClass, buttonInnerHtml, buttonHandler, id, groupName=null){
+    let attributes = [];
+    attributes.push({key:'groupId', val:id});
+    if(groupName) attributes.push({key:'groupName', val:groupName});
+    addButtonColumn(row,tdClass,buttonInnerHtml,buttonHandler,attributes);
+}
+
 function getTableRow(id, name, departmentName, facultyName){
     let row = document.createElement('tr');
-    let idCol         = document.createElement('td');
-    let nameCol       = document.createElement('td');
-    let facultyCol    = document.createElement('td');
-    let departmentCol = document.createElement('td');
-    let redactCol     = document.createElement('td');
-    let deleteCol     = document.createElement('td');
+    addColumn(row,id            , 'idCol'            );
+    addColumn(row,name          , 'nameCol'          );
+    addColumn(row,facultyName   , 'facultyCol'       );
+    addColumn(row,departmentName, 'departmentCol'    );
     
-    let cols = [idCol, nameCol, facultyCol, departmentCol, redactCol, deleteCol];
-
-    let redactButton = document.createElement('button');
-    redactButton.innerHTML = 'Редактировать';
-    redactButton.setAttribute('groupId', id);
-    redactButton.onclick = redactGroupHandler;
-    let deleteButton = document.createElement('button');
-    deleteButton.innerHTML = 'Удалить';
-    deleteButton.setAttribute('groupId', id);
-    deleteButton.setAttribute('groupName', name);
-    deleteButton.onclick = deleteGroup;
-    
-    idCol.innerHTML = id;
-    nameCol.innerHTML = name;
-    facultyCol.innerHTML = facultyName;
-    departmentCol.innerHTML = departmentName;
-    redactCol.appendChild(redactButton);
-    deleteCol.appendChild(deleteButton);
-
-    idCol.setAttribute('class',        'idCol');
-    nameCol.setAttribute('class',      'nameCol');
-    facultyCol.setAttribute('class',   'facultyCol');
-    departmentCol.setAttribute('class','departmentCol');
-    redactCol.setAttribute('class',    'redactCol');
-    deleteCol.setAttribute('class',    'deleteCol');
-
-    for(let col of cols) row.appendChild(col);
+    addGroupButtonColumn(row,'redactCol','Редактировать',redactGroupHandler,id);
+    addGroupButtonColumn(row,'deleteCol','Удалить',deleteGroup,id,name);
 
     row.setAttribute('class', 'dataRow');
     return row;
-}
-
-
-function createAdditionRow(){
-    additionRow = document.createElement('tr');
-    additionRow.setAttribute('class', 'additionRow');
-    let additionCol = document.createElement('td');
-    additionCol.setAttribute('colspan','6');
-    let additionButton = document.createElement('button');
-    additionButton.onclick = addGroup;
-    additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
-    additionButton.setAttribute('class', 'additionButton');
-    additionCol.appendChild(additionButton);
-    additionRow.appendChild(additionCol);
-    table.appendChild(additionRow);
 }
 
 async function loadGroups(){
@@ -146,73 +123,29 @@ async function loadGroups(){
     return response;
 }
 
+function getRowByModel(group){
+    let id             = group.id;
+    let name           = group.name;
+    let departmentName = group.department.shortName;
+    let facultyName    = group.department.faculty.shortName;
+    return getTableRow(id, name, departmentName, facultyName);
+}
+
 async function fillTable(){    
     let response = await loadGroups();
     let groups = response.groups;
     setDisable('nextPageBtn', pageNum >= response.pagesAmount);
-    groups.sort((a, b) => a.id-b.id);
-    for(let group of groups){
-        let id             = group.id;
-        let name           = group.name;
-        let departmentName = group.department.shortName;
-        let facultyName    = group.department.faculty.shortName;
-        let row = getTableRow(id, name, departmentName, facultyName);
-        table.appendChild(row);
-    }
-    createAdditionRow();
-}
-
-function clearTable(){
-    let rows = document.getElementsByClassName('dataRow');
-    while(rows.length > 0){
-        table.removeChild(rows[0]);
-    }
-    let additionRow = document.getElementsByClassName('additionRow')[0];
-    table.removeChild(additionRow);
+    fillTableData(groups, getRowByModel, table, additionRow);
 }
 
 async function refillTable(){
-    clearTable();
+    clearTable(table, 'dataRow');
     await fillTable();
 }
 
-
-function getOptionSN(faculty){
-    let option = document.createElement('option');
-    option.innerHTML = faculty.shortName;
-    option.value     = faculty.id;
-    return option;
-}
-
-function getNullOption(annotation){
-    let option = document.createElement('option');
-    option.innerHTML = annotation;
-    option.value     = 0;
-    return option;
-}
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
-
-function fillSelect(selectId, dataArray, optionFn, nullAnnotation){
-    let select = document.getElementById(selectId);
-    select.appendChild(getNullOption(nullAnnotation));
-    for(let dataCol of dataArray){
-        let option = optionFn(dataCol);
-        select.appendChild(option);
-    }
-}
-
 async function fillSelects(facultyId){
-    let faculties = await FacultiesService.getAll();
-    let departments = await DepartmentsService.getList(facultyId);
-    fillSelect("facultyField", faculties, getOptionSN, "Институт...");
-    fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
-}
-
-function setDisable(id, value){
-    document.getElementById(id).disabled = value;
+    await fillFaculties("facultyField","Институт...");
+    await fillDepartments(facultyId,"departmentField","Кафедра...");
 }
 
 function changePage(step){
@@ -226,26 +159,26 @@ let onSearch = () => changePage(1-pageNum);
 let onNextPage = () => changePage(1);
 let onPrevPage = () => changePage(-1);
 
-function setOnClick(btnId, handler){
-    document.getElementById(btnId).onclick = handler;
-}
-
 async function selectFacultyOnChange(event){
     let facultyId = event.originalTarget.value;
-    let departments = await DepartmentsService.getList(facultyId);
     clearSelect("departmentField");
-    fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
+    await fillDepartments(facultyId,"departmentField","Кафедра...");
 }
 
 async function init(){
     setOnClick('searchBtn', onSearch);
     setOnClick('nextPageBtn', onNextPage);
     setOnClick('prevPageBtn', onPrevPage);
-    document.getElementById('facultyField').onchange = selectFacultyOnChange
+    setOnChange('facultyField', selectFacultyOnChange);
+    
     type = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
+    
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     table = document.getElementById('groupsTable').getElementsByTagName('tbody')[0];
+    additionRow = createAdditionRow(table, ADDITION_COLUMN_WIDTH, ADDITION_BUTTON_ANNOTATION, addGroup);
+
     let facultyId, departmentId;
     let facultyField    = document.getElementById("facultyField");
     let departmentField = document.getElementById("departmentField");
@@ -266,7 +199,7 @@ async function init(){
             departmentId = 0;
             break;
         default:
-            showError('Ошибка типа авторизации', errorBar);
+            showError(AUTH_TYPE_ERROR, errorBar);
             return;
     }
     await fillSelects(facultyId);
