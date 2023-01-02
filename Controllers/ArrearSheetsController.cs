@@ -180,14 +180,14 @@ namespace arrearsApi5_0.Controllers{
                 return BadRequest(AUTH_ERROR);
             if (arrearSheet.Status != STATUS_CONFIRMED) 
                 return BadRequest(WAS_NOT_CONFIRMED);
-            string[] availableMark;
+            string[] availableMarks;
             if (arrearSheet.Discipline.PassType == "зачет"){
-                availableMark = new string[] { "зачет", "незачет" };
+                availableMarks = new string[] { "зачет", "незачет" };
             }
             else{
-                availableMark = new string[] { "2", "3", "4", "5" };
+                availableMarks = new string[] { "2", "3", "4", "5" };
             }
-            if (!availableMark.Contains(mark))
+            if (!availableMarks.Contains(mark))
                 return BadRequest(MARK_INCORRECT);
             arrearSheet.Mark = mark;
             arrearSheet.Status = STATUS_MARKED;
@@ -238,14 +238,14 @@ namespace arrearsApi5_0.Controllers{
                                              .ThenInclude(x => x.Faculty).FirstOrDefault(x => x.Id == id);
             if (arrearSheet.Status != STATUS_CONFIRMED) 
                 return BadRequest(WAS_NOT_CONFIRMED);
-            string[] availableMark;
+            string[] availableMarks;
             if (arrearSheet.Discipline.PassType == "зачет"){
-                availableMark = new string[] { "зачет", "незачет" };
+                availableMarks = new string[] { "зачет", "незачет" };
             }
             else{
-                availableMark = new string[] { "2", "3", "4", "5" };
+                availableMarks = new string[] { "2", "3", "4", "5" };
             }
-            if (!availableMark.Contains(mark))
+            if (!availableMarks.Contains(mark))
                 return BadRequest(MARK_INCORRECT);
             arrearSheet.Mark = mark;
             arrearSheet.Status = STATUS_MARKED;
@@ -311,6 +311,8 @@ namespace arrearsApi5_0.Controllers{
                 return NotFound(MAGISTER_NOT_FOUND);
             if (!discipline.Magisters.Any(x => x.Id == arrearSheet.MagisterId))
                 return BadRequest(MAGISTER_WAS_NOT_ASSIGNED_TO_DISCIPLINE);
+            arrearSheet.Status = STATUS_OPENED;
+            arrearSheet.Mark = "";
             arrearSheet.FromationDate = DateTime.Now;
             ArrearSheet result = db.ArrearSheets.Add(arrearSheet).Entity;
             db.SaveChanges();
