@@ -1,5 +1,14 @@
+import { addButtonColumn } from "../../-functions/addButtonColumn.js";
+import { addColumn } from "../../-functions/addColumn.js";
+import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
+import { fillSelect } from "../../-functions/fillSelect.js";
+import { fillDepartments, fillFaculties } from "../../-functions/fillSelects.js";
+import { fillTableData } from "../../-functions/fillTableData.js";
+import { getNullOption, getOptionSN } from "../../-functions/getOption.js";
 import { redirect } from "../../-functions/redirect.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 import { showError } from "../../-functions/showError.js";
 import { getValueById } from "../../-functions/valById.js";
 import { Magister } from "../../-models/magister.model.js";
@@ -13,6 +22,7 @@ window.onload = init;
 setTimeout(fadeIn, 1200);
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить преподавателя';
+const ADDITION_COLUMN_WIDTH      = 8;
 
 let pageNum = 1;
 let table;
@@ -50,9 +60,7 @@ async function addEntry(){
     else{
         let tr = getTableRow(response.id, response.surname, response.name, response.patronymicName, 
             response.department.shortName, response.department.faculty.shortName);
-        table.removeChild(additionRow);
-        table.appendChild(tr);
-        table.appendChild(additionRow);
+        table.appendChild(tr, additionRow);
     }
 }
 
@@ -82,65 +90,30 @@ async function deleteMagister(event){
     table.removeChild(tableRow);
 }
 
+function addMagisterButtonColumn(row, tdClass, buttonInnerHtml, buttonHandler, id, magisterFullName=null){
+    let attributes = [];
+    attributes.push({key:'magisterId', val:id});
+    if(magisterFullName) attributes.push({key:'magisterFullName', val:magisterFullName});
+    addButtonColumn(row,tdClass,buttonInnerHtml,buttonHandler,attributes);
+}
+
 function getTableRow(id, surname, name, patronymicName, departmentName, facultyName){
     let row = document.createElement('tr');
-    let idCol             = document.createElement('td');
-    let surnameCol        = document.createElement('td');
-    let nameCol           = document.createElement('td');
-    let patronymicNameCol = document.createElement('td');
-    let facultyCol        = document.createElement('td');
-    let departmentCol     = document.createElement('td');
-    let redactCol         = document.createElement('td');
-    let deleteCol         = document.createElement('td');
+    addColumn(row,id            , 'idCol'            );
+    addColumn(row,surname       , 'surnameCol'       );
+    addColumn(row,name          , 'nameCol'          );
+    addColumn(row,patronymicName, 'patronymicNameCol');
+    addColumn(row,facultyName   , 'facultyCol'       );
+    addColumn(row,departmentName, 'departmentCol'    );
     
-    let cols = [idCol, surnameCol, nameCol, patronymicNameCol, facultyCol, departmentCol, redactCol, deleteCol];
-
-    let redactButton = document.createElement('button');
-    redactButton.innerHTML = 'Редактировать';
-    redactButton.setAttribute('magisterId', id);
-    redactButton.onclick = redactMagisterHandler;
-    let deleteButton = document.createElement('button');
-    deleteButton.innerHTML = 'Удалить';
-    deleteButton.setAttribute('magisterId', id);
-    deleteButton.setAttribute('magisterFullName', `${surname} ${name} ${patronymicName}`);
-    deleteButton.onclick = deleteMagister;
-    
-    idCol.innerHTML             = id;
-    surnameCol.innerHTML        = surname;
-    nameCol.innerHTML           = name;
-    patronymicNameCol.innerHTML = patronymicName;
-    facultyCol.innerHTML        = facultyName;
-    departmentCol.innerHTML     = departmentName;
-    redactCol.appendChild(redactButton);
-    deleteCol.appendChild(deleteButton);
-
-    idCol.setAttribute('class',        'idCol');
-    nameCol.setAttribute('class',      'nameCol');
-    facultyCol.setAttribute('class',   'facultyCol');
-    departmentCol.setAttribute('class','departmentCol');
-    redactCol.setAttribute('class',    'redactCol');
-    deleteCol.setAttribute('class',    'deleteCol');
-
-    for(let col of cols) row.appendChild(col);
+    let magisterFullName = `${surname} ${name} ${patronymicName}`;
+    addMagisterButtonColumn(row, 'redactCol', 'Редактировать', redactMagisterHandler, id);
+    addMagisterButtonColumn(row, 'deleteCol', 'Удалить', deleteMagister, id, magisterFullName);
 
     row.setAttribute('class', 'dataRow');
     return row;
 }
 
-
-function createAdditionRow(){
-    additionRow = document.createElement('tr');
-    additionRow.setAttribute('class', 'additionRow');
-    let additionCol = document.createElement('td');
-    additionCol.setAttribute('colspan','8');
-    let additionButton = document.createElement('button');
-    additionButton.onclick = addEntry;
-    additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
-    additionButton.setAttribute('class', 'additionButton');
-    additionCol.appendChild(additionButton);
-    additionRow.appendChild(additionCol);
-    table.appendChild(additionRow);
-}
 
 async function loadMagisters(){
     let facultyId         = getValueById("facultyField");
@@ -152,22 +125,23 @@ async function loadMagisters(){
     return response;
 }
 
+function getRowByModel(magister){
+    let id             = magister.id;
+    let surname        = magister.surname;
+    let name           = magister.name;
+    let patronymicName = magister.patronymicName;
+    let departmentName = magister.department.shortName;
+    let facultyName    = magister.department.faculty.shortName;
+    return getTableRow(id, surname, name, patronymicName, departmentName, facultyName);
+}
+
+
+
 async function fillTable(){    
     let response = await loadMagisters();
     let magisters = response.magisters;
     setDisable('nextPageBtn', pageNum >= response.pagesAmount);
-    magisters.sort((a, b) => a.id-b.id);
-    for(let magister of magisters){
-        let id             = magister.id;
-        let surname        = magister.surname;
-        let name           = magister.name;
-        let patronymicName = magister.patronymicName;
-        let departmentName = magister.department.shortName;
-        let facultyName    = magister.department.faculty.shortName;
-        let row = getTableRow(id, surname, name, patronymicName, departmentName, facultyName);
-        table.appendChild(row);
-    }
-    createAdditionRow();
+    fillTableData(magisters, getRowByModel, table, additionRow);
 }
 
 function clearTable(){
@@ -175,8 +149,6 @@ function clearTable(){
     while(rows.length > 0){
         table.removeChild(rows[0]);
     }
-    let additionRow = document.getElementsByClassName('additionRow')[0];
-    table.removeChild(additionRow);
 }
 
 async function refillTable(){
@@ -184,43 +156,13 @@ async function refillTable(){
     await fillTable();
 }
 
-
-function getOptionSN(faculty){
-    let option = document.createElement('option');
-    option.innerHTML = faculty.shortName;
-    option.value     = faculty.id;
-    return option;
-}
-
-function getNullOption(annotation){
-    let option = document.createElement('option');
-    option.innerHTML = annotation;
-    option.value     = 0;
-    return option;
-}
-
 function clearSelect(selectId){
     document.getElementById(selectId).innerHTML = '';
 }
 
-function fillSelect(selectId, dataArray, optionFn, nullAnnotation){
-    let select = document.getElementById(selectId);
-    select.appendChild(getNullOption(nullAnnotation));
-    for(let dataCol of dataArray){
-        let option = optionFn(dataCol);
-        select.appendChild(option);
-    }
-}
-
 async function fillSelects(facultyId){
-    let faculties = await FacultiesService.getAll();
-    let departments = await DepartmentsService.getList(facultyId);
-    fillSelect("facultyField", faculties, getOptionSN, "Институт...");
-    fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
-}
-
-function setDisable(id, value){
-    document.getElementById(id).disabled = value;
+    await fillFaculties("facultyField","Институт...");
+    await fillDepartments(facultyId,"departmentField","Кафедра...");
 }
 
 function changePage(step){
@@ -234,26 +176,27 @@ let onSearch = () => changePage(1-pageNum);
 let onNextPage = () => changePage(1);
 let onPrevPage = () => changePage(-1);
 
-function setOnClick(btnId, handler){
-    document.getElementById(btnId).onclick = handler;
-}
-
 async function selectFacultyOnChange(event){
     let facultyId = event.originalTarget.value;
-    let departments = await DepartmentsService.getList(facultyId);
     clearSelect("departmentField");
-    fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
+    await fillDepartments(facultyId,"departmentField","Кафедра...");
 }
 
 async function init(){
     setOnClick('searchBtn', onSearch);
     setOnClick('nextPageBtn', onNextPage);
     setOnClick('prevPageBtn', onPrevPage);
-    document.getElementById('facultyField').onchange = selectFacultyOnChange
+    
+    setOnChange('facultyField', selectFacultyOnChange);
+    
     type = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
+    
     errorBar = document.getElementsByTagName('error-bar')[0];
+    
     table = document.getElementById('magistersTable').getElementsByTagName('tbody')[0];
+    additionRow = createAdditionRow(table, ADDITION_COLUMN_WIDTH, ADDITION_BUTTON_ANNOTATION, addEntry);
+
     let facultyId, departmentId;
     let facultyField    = document.getElementById("facultyField");
     let departmentField = document.getElementById("departmentField");

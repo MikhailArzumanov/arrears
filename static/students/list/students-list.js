@@ -1,5 +1,16 @@
+import { addButtonColumn } from "../../-functions/addButtonColumn.js";
+import { addColumn } from "../../-functions/addColumn.js";
+import { clearSelect } from "../../-functions/clearSelect.js";
+import { clearTable } from "../../-functions/clearTable.js";
+import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
+import { fillSelect } from "../../-functions/fillSelect.js";
+import { fillDepartments, fillFaculties, fillGroups } from "../../-functions/fillSelects.js";
+import { fillTableData } from "../../-functions/fillTableData.js";
+import { getOptionN, getOptionSN } from "../../-functions/getOption.js";
 import { redirect } from "../../-functions/redirect.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 import { showError } from "../../-functions/showError.js";
 import { getValueById } from "../../-functions/valById.js";
 import { Student } from "../../-models/student.model.js";
@@ -15,6 +26,7 @@ setTimeout(fadeIn, 1200);
 
 
 const ADDITION_BUTTON_ANNOTATION = 'Добавить студента';
+const ADDITION_COLUMN_WIDTH = 9;
 
 let pageNum = 1;
 let table;
@@ -51,6 +63,7 @@ async function getGroupId(){
     showError('Ошибка типа авторизации', errorBar);
     return null;
 }
+
 
 async function addEntry(){
     let groupId = await getGroupId();
@@ -96,67 +109,30 @@ async function deleteStudent(event){
     table.removeChild(tableRow);
 }
 
+function addStudentButtonColumn(row, tdClass, buttonInnerHtml, buttonHandler, id, studentFullName=null){
+    let attributes = [];
+    attributes.push({key:'studentId', val:id});
+    if(studentFullName) attributes.push({key:'studentFullName', val:studentFullName});
+    addButtonColumn(row,tdClass,buttonInnerHtml,buttonHandler,attributes);
+}
+
 function getTableRow(id, surname, name, patronymicName, groupName, departmentName, facultyName){
     let row = document.createElement('tr');
-    let idCol             = document.createElement('td');
-    let surnameCol        = document.createElement('td');
-    let nameCol           = document.createElement('td');
-    let patronymicNameCol = document.createElement('td');
-    let facultyCol        = document.createElement('td');
-    let departmentCol     = document.createElement('td');
-    let groupCol          = document.createElement('td');
-    let redactCol         = document.createElement('td');
-    let deleteCol         = document.createElement('td');
+    addColumn(row, id,             'idCol'            );
+    addColumn(row, surname,        'surnameCol'       );
+    addColumn(row, name,           'nameCol'          );
+    addColumn(row, patronymicName, 'patronymicNameCol');
+    addColumn(row, facultyName,    'facultyCol'       );
+    addColumn(row, departmentName, 'departmentCol'    );
+    addColumn(row, groupName,      'groupCol'         );
     
-    let cols = [idCol, surnameCol, nameCol, patronymicNameCol, facultyCol, departmentCol, groupCol, redactCol, deleteCol];
+    let studentFullName = `${surname} ${name} ${patronymicName}`;
 
-    let redactButton = document.createElement('button');
-    redactButton.innerHTML = 'Редактировать';
-    redactButton.setAttribute('studentId', id);
-    redactButton.onclick = redactStudentHandler;
-    let deleteButton = document.createElement('button');
-    deleteButton.innerHTML = 'Удалить';
-    deleteButton.setAttribute('studentId', id);
-    deleteButton.setAttribute('studentFullName', `${surname} ${name} ${patronymicName}`);
-    deleteButton.onclick = deleteStudent;
-    
-    idCol.innerHTML             = id;
-    surnameCol.innerHTML        = surname;
-    nameCol.innerHTML           = name;
-    patronymicNameCol.innerHTML = patronymicName;
-    facultyCol.innerHTML        = facultyName;
-    departmentCol.innerHTML     = departmentName;
-    groupCol.innerHTML          = groupName;
-    redactCol.appendChild(redactButton);
-    deleteCol.appendChild(deleteButton);
-
-    idCol.setAttribute('class',        'idCol');
-    nameCol.setAttribute('class',      'nameCol');
-    facultyCol.setAttribute('class',   'facultyCol');
-    departmentCol.setAttribute('class','departmentCol');
-    groupCol.setAttribute('class',     'groupCol')
-    redactCol.setAttribute('class',    'redactCol');
-    deleteCol.setAttribute('class',    'deleteCol');
-
-    for(let col of cols) row.appendChild(col);
+    addStudentButtonColumn(row, 'redactCol', 'Редактировать', redactStudentHandler, id);
+    addStudentButtonColumn(row, 'deleteCol', 'Удалить', deleteStudent, id, studentFullName);
 
     row.setAttribute('class', 'dataRow');
     return row;
-}
-
-
-function createAdditionRow(){
-    additionRow = document.createElement('tr');
-    additionRow.setAttribute('class', 'additionRow');
-    let additionCol = document.createElement('td');
-    additionCol.setAttribute('colspan','9');
-    let additionButton = document.createElement('button');
-    additionButton.onclick = addEntry;
-    additionButton.innerHTML = ADDITION_BUTTON_ANNOTATION;
-    additionButton.setAttribute('class', 'additionButton');
-    additionCol.appendChild(additionButton);
-    additionRow.appendChild(additionCol);
-    table.appendChild(additionRow);
 }
 
 async function loadStudents(){
@@ -170,97 +146,33 @@ async function loadStudents(){
     return response;
 }
 
+function getRowByModel(student){
+    let id             = student.id;
+    let surname        = student.surname;
+    let name           = student.name;
+    let patronymicName = student.patronymicName;
+    let groupName      = student.group.name;
+    let departmentName = student.group.department.shortName;
+    let facultyName    = student.group.department.faculty.shortName;
+    return getTableRow(id, surname, name, patronymicName, groupName, departmentName, facultyName);
+}
+
 async function fillTable(){    
     let response = await loadStudents();
     let students = response.students;
     setDisable('nextPageBtn', pageNum >= response.pagesAmount);
-    students.sort((a, b) => a.id-b.id);
-    for(let student of students){
-        let id             = student.id;
-        let surname        = student.surname;
-        let name           = student.name;
-        let patronymicName = student.patronymicName;
-        let groupName      = student.group.name;
-        let departmentName = student.group.department.shortName;
-        let facultyName    = student.group.department.faculty.shortName;
-        let row = getTableRow(id, surname, name, patronymicName, groupName, departmentName, facultyName);
-        table.appendChild(row);
-    }
-    createAdditionRow();
-}
-
-function clearTable(){
-    let rows = document.getElementsByClassName('dataRow');
-    while(rows.length > 0){
-        table.removeChild(rows[0]);
-    }
-    let additionRow = document.getElementsByClassName('additionRow')[0];
-    table.removeChild(additionRow);
+    fillTableData(students, getRowByModel, table, additionRow);
 }
 
 async function refillTable(){
-    clearTable();
+    clearTable(table, 'dataRow');
     await fillTable();
 }
 
-function getOptionSN(snModel){
-    let option = document.createElement('option');
-    option.innerHTML = snModel.shortName;
-    option.value     = snModel.id;
-    return option;
-}
-
-function getOptionN(nModel){
-    let option = document.createElement('option');
-    option.innerHTML = nModel.name;
-    option.value     = nModel.id;
-    return option;
-}
-
-function getNullOption(annotation){
-    let option = document.createElement('option');
-    option.innerHTML = annotation;
-    option.value     = 0;
-    return option;
-}
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
-
-function fillSelect(selectId, dataArray, optionFn, nullAnnotation){
-    let select = document.getElementById(selectId);
-    select.appendChild(getNullOption(nullAnnotation));
-    for(let dataCol of dataArray){
-        let option = optionFn(dataCol);
-        select.appendChild(option);
-    }
-}
-
-async function fillFaculties(){
-    let faculties = await FacultiesService.getAll();
-    fillSelect("facultyField", faculties, getOptionSN, "Институт...");
-}
-
-async function fillDepartments(facultyId){
-    let departments = await DepartmentsService.getList(facultyId);
-    fillSelect("departmentField", departments, getOptionSN, "Кафедра...");
-}
-
-async function fillGroups(facultyId, departmentId){
-    let response = await GroupsService.getList(facultyId, departmentId, '', 0);
-    let groups = response.groups;
-    fillSelect("groupField", groups, getOptionN, "Группа...");
-}
-
 async function fillSelects(facultyId, departmentId){
-    await fillFaculties();
-    await fillDepartments(facultyId);
-    await fillGroups(facultyId, departmentId);
-}
-
-function setDisable(id, value){
-    document.getElementById(id).disabled = value;
+    await fillFaculties("facultyField", "Институт...");
+    await fillDepartments(facultyId, "departmentField", "Кафедра...");
+    await fillGroups(facultyId, departmentId, "groupField", "Группа...");
 }
 
 function changePage(step){
@@ -274,34 +186,35 @@ let onSearch = () => changePage(1-pageNum);
 let onNextPage = () => changePage(1);
 let onPrevPage = () => changePage(-1);
 
-function setOnClick(btnId, handler){
-    document.getElementById(btnId).onclick = handler;
-}
-
 async function selectFacultyOnChange(event){
     let facultyId = event.originalTarget.value;
     clearSelect("departmentField");
-    fillDepartments(facultyId);
+    fillDepartments(facultyId, "departmentField", "Кафедра...");
     clearSelect("groupField");
-    fillGroups(facultyId,0);
+    fillGroups(facultyId,0, "groupField", "Группа...");
 }
 
 async function selectDepartmentOnChange(event){
     let departmentId = event.originalTarget.value;
     clearSelect("groupField");
-    fillGroups(0,departmentId);
+    fillGroups(0,departmentId, "groupField", "Группа...");
 }
 
 async function init(){
     setOnClick('searchBtn',   onSearch);
     setOnClick('nextPageBtn', onNextPage);
     setOnClick('prevPageBtn', onPrevPage);
-    document.getElementById('facultyField'   ).onchange = selectFacultyOnChange;
-    document.getElementById('departmentField').onchange = selectDepartmentOnChange;
+    setOnChange('facultyField', selectFacultyOnChange);
+    setOnChange('departmentField', selectDepartmentOnChange);
+
     type = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     table = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
+    additionRow = createAdditionRow(table, ADDITION_COLUMN_WIDTH, ADDITION_BUTTON_ANNOTATION, addEntry);
+
     let facultyId, departmentId, groupId;
     let facultyField    = document.getElementById("facultyField");
     let departmentField = document.getElementById("departmentField");
