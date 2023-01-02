@@ -8,3 +8,10 @@ export function fillSelect(selectId, dataArray, optionFn, nullAnnotation){
         select.appendChild(option);
     }
 }
+
+export function fillRequiredSelect(selectId, dataArray, optionFn){
+    let select = document.getElementById(selectId);
+    for(let element of dataArray)
+        select.appendChild(optionFn(element));
+    
+}

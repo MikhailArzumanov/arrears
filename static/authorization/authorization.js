@@ -9,6 +9,7 @@ import { GroupsService } from "../-services/groups.service.js";
 import { MagistersService } from "../-services/magisters.service.js";
 import { StudentsService } from "../-services/students.service.js";
 import { AdministratorService } from "../-services/administrators.service.js";
+import { setOnClick } from "../-functions/setHandler.js";
 
 
 fadeIn();
@@ -79,7 +80,6 @@ let errorBar;
 window.onload = init;
 
 function init(){
-    let loginButton = document.getElementById('loginButton');
-    loginButton.onclick = login;
+    setOnClick('loginButton',login);
     errorBar = document.getElementsByTagName('error-bar')[0];
 }

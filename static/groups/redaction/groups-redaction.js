@@ -8,6 +8,7 @@ import { AuthorizedService } from "../../-services/-base-services/authorized.ser
 import { DepartmentsService } from "../../-services/departments.service.js";
 import { Group } from "../../-models/group.model.js";
 import { GroupsService } from "../../-services/groups.service.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
@@ -17,7 +18,8 @@ const WAS_NOT_CHOSEN = 'Группа не была выбрана';
 let id;
 let errorBar;
 let authType;
-let authorizedData;
+//let authorizedData;
+
 let fieldsNames = [
     'idField',        
     'facultyField',   
@@ -118,10 +120,15 @@ async function selectFacultyOnChange(event){
 }
 
 async function init(){
-    document.getElementById('facultyField').onchange = selectFacultyOnChange;
+    setOnClick('saveButton',save);
+    setOnClick('deleteButton', deleteEntry);
+    setOnChange('facultyField', selectFacultyOnChange);
+    
     authType       = AuthorizedService.getAuthorizedType;
-    authorizedData = AuthorizedService.getAuthorizedData;
+    //authorizedData = AuthorizedService.getAuthorizedData;
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     id = sessionStorage.getItem('groupId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);
@@ -129,15 +136,13 @@ async function init(){
         //setTimeout(() => redirect('/groups/list'), 1200);
         return;
     }
+    
     let response;
     if(authType == "admin")
         response = await GroupsService.getConcreteAsAdministrator(id);
     else response = await GroupsService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
+
     await loadAndFillData(response.department.faculty.id);
     fillFields(response);
-    let saveButton = document.getElementById('saveButton');
-    saveButton.onclick = save;
-    let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteEntry;
 }

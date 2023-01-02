@@ -10,6 +10,12 @@ import { Discipline } from "../../-models/discipline.model.js";
 import { DisciplinesService } from "../../-services/disciplines.service.js";
 import { GroupsService } from "../../-services/groups.service.js";
 import { MagistersService } from "../../-services/magisters.service.js";
+import { fillRequiredSelect } from "../../-functions/fillSelect.js";
+import { setOnClick } from "../../-functions/setHandler.js";
+import { getOptionN, getOptionSame } from "../../-functions/getOption.js";
+import { addColumn } from "../../-functions/addColumn.js";
+import { addButtonColumn } from "../../-functions/addButtonColumn.js";
+import { clearSelect } from "../../-functions/clearSelect.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
@@ -85,79 +91,58 @@ async function deleteEntry(){
     }, 1200)
 }
 
-function removeLine(event){
+function removeElement(event, array){
     let row = event.originalTarget.parentElement.parentElement;
-    groupsTable.removeChild(row);
+    row.parentElement.removeChild(row);
+    let id = Number(event.originalTarget.getAttribute('id'));
+    let i = array.indexOf(id);
+    array.splice(i, 1);
 }
 
 function removeGroup(event){
-    removeLine(event);
-    let groupId = event.originalTarget.getAttribute('id');
-    let i = groupsIds.indexOf(groupId);
-    groupsIds.splice(i, 1);
+    removeElement(event, groupsIds);
 }
 
 function removeMagister(event){
-    removeLine(event);
-    let magisterId = event.originalTarget.getAttribute('id');
-    let i = magistersIds.indexOf(magisterId);
-    magistersIds.splice(i, 1);
+    removeElement(event, magistersIds);
+}
+
+function addListsButtonColumn(row, tdClass, buttonInnerHtml, buttonHandler, id){
+    let attributes = [];
+    attributes.push({key:'id', val:id});
+    addButtonColumn(row,tdClass,buttonInnerHtml,buttonHandler,attributes);
+}
+
+function pushOrNotify(array, val, annotation){
+    if(array.includes(val)){
+        showError(annotation, errorBar);
+        return true;
+    }
+    array.push(val);
 }
 
 function addGroup(group){
-    if(groupsIds.includes(group.id)){
-        showError('Группа уже была добавлена.', errorBar);
-        return;
-    }
-
-    groupsIds.push(group.id);
+    let alreadyIn = pushOrNotify(groupsIds, group.id, 'Группа уже была добавлена.');
+    if(alreadyIn) return;
 
     let row = document.createElement('tr');
-    let idCol     = document.createElement('td');
-    let nameCol   = document.createElement('td');
-    let removeCol = document.createElement('td');
-
-    let removeButton = document.createElement('button');
-    removeButton.innerHTML = 'x';
-    removeButton.onclick   = removeGroup;
-    removeButton.setAttribute('id', group.id);
-
-    idCol.innerHTML   = group.id;
-    nameCol.innerHTML = group.name;
-    removeCol.appendChild(removeButton);
-
-    row.appendChild(idCol);
-    row.appendChild(nameCol);
-    row.appendChild(removeCol);
+    addColumn(row, group.id,   'groupIdCol');
+    addColumn(row, group.name, 'groupNameCol');
+    addListsButtonColumn(row, 'removeGroupColumn', 'x', removeGroup, group.id);
 
     groupsTable.insertBefore(row, groupsFilterLine);
 }
 
 function addMagister(magister){
-    if(magistersIds.includes(magister.id)){
-        showError('Преподаватель уже был добавлен.', errorBar);
-        return;
-    }
+    let alreadyIn = pushOrNotify(magistersIds, magister.id, 'Преподаватель уже был добавлен.');
+    if(alreadyIn) return;
 
-    magistersIds.push(magister.id);
+    let magisterFullName = `${magister.surname} ${magister.name} ${magister.patronymicName}`;
 
     let row = document.createElement('tr');
-    let idCol     = document.createElement('td');
-    let nameCol   = document.createElement('td');
-    let removeCol = document.createElement('td');
-
-    let removeButton = document.createElement('button');
-    removeButton.innerHTML = 'x';
-    removeButton.onclick   = removeMagister;
-    removeButton.setAttribute('id', magister.id);
-
-    idCol.innerHTML   = magister.id;
-    nameCol.innerHTML = `${magister.surname} ${magister.name} ${magister.patronymicName}`;
-    removeCol.appendChild(removeButton);
-
-    row.appendChild(idCol);
-    row.appendChild(nameCol);
-    row.appendChild(removeCol);
+    addColumn(row, magister.id,      'magisterIdCol');
+    addColumn(row, magisterFullName, 'magisterNameCol');
+    addListsButtonColumn(row, 'removeMagisterColumn', 'x', removeMagister, magister.id);
 
     magistersTable.insertBefore(row, magistersFilterLine);
 }
@@ -183,13 +168,6 @@ function clearFieldsAndDisableControls(){
     }
 }
 
-function getOptionN(nModel){
-    let option = document.createElement('option');
-    option.innerHTML = nModel.name;
-    option.value     = nModel.id;
-    return option;
-}
-
 function getOptionFullName(fullNameModel){
     let option = document.createElement('option');
     option.innerHTML = `${fullNameModel.surname} ${fullNameModel.name} ${fullNameModel.patronymicName}`;
@@ -197,36 +175,10 @@ function getOptionFullName(fullNameModel){
     return option;
 }
 
-function getOptionSame(value){
-    let option = document.createElement('option');
-    option.innerHTML = value;
-    option.value     = value;
-    return option;
-}
-
-function getNullOption(annotation){
-    let option = document.createElement('option');
-    option.innerHTML = annotation;
-    option.value     = 0;
-    return option;
-}
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
-
-function fillSelect(selectId, dataArray, optionFn){
-    let select = document.getElementById(selectId);
-    for(let dataCol of dataArray){
-        let option = optionFn(dataCol);
-        select.appendChild(option);
-    }
-}
-
 async function loadMagisters(searchVal){
     let magistersResp = await MagistersService.getList(0,0,searchVal,'','',0);
     let magisters = magistersResp.magisters;
-    fillSelect('magistersSelectField', magisters, getOptionFullName);
+    fillRequiredSelect('magistersSelectField', magisters, getOptionFullName);
 }
 async function reloadMagisters(){
     clearSelect('magistersSelectField');
@@ -237,7 +189,7 @@ async function reloadMagisters(){
 async function loadGroups(searchVal){
     let groupsResp = await GroupsService.getList(0,0,searchVal,0);
     let groups = groupsResp.groups;
-    fillSelect('groupsSelectField', groups, getOptionN);
+    fillRequiredSelect('groupsSelectField', groups, getOptionN);
 }
 
 async function reloadGroups(){
@@ -252,18 +204,13 @@ async function loadAndFillData(){
 }
 
 function fillStaticSelects(){
-    let yearsSelect     = document.getElementById('yearField');
-    let semestersSelect = document.getElementById('semestrField');
-    let passTypesSelect = document.getElementById('passTypeField');
-    let year = firstYear;
-    while(year <= lastYear){
-        yearsSelect.appendChild(getOptionSame(year));
-        year++;
+    let years = [];
+    for(let year = firstYear; year <= lastYear; year++){
+        years.push(year);
     }
-    for(let semestr of semesters) 
-        semestersSelect.appendChild(getOptionSame(semestr));
-    for(let passType of passTypes)
-        passTypesSelect.appendChild(getOptionSame(passType));
+    fillRequiredSelect('yearField',     years,     getOptionSame);
+    fillRequiredSelect('semestrField' , semesters, getOptionSame);
+    fillRequiredSelect('passTypeField', passTypes, getOptionSame);
 }
 
 async function addGroupHandler(){
@@ -288,25 +235,27 @@ async function addMagisterHandler(){
     addMagister(response);
 }
 
-function setOnClickById(id, fn){
-    let element = document.getElementById(id);
-    element.onclick = fn;
-}
 
 async function init(){
-    setOnClickById('saveButton',          save);
-    setOnClickById('deleteButton', deleteEntry);
-    setOnClickById('groupsFilterButton',       reloadGroups);
-    setOnClickById('addGroupButton',        addGroupHandler);
-    setOnClickById('magistersFilterButton', reloadMagisters);
-    setOnClickById('addMagisterButton',  addMagisterHandler);
+    setOnClick('saveButton',          save);
+    setOnClick('deleteButton', deleteEntry);
+
+    setOnClick('groupsFilterButton',    reloadGroups);
+    setOnClick('addGroupButton',        addGroupHandler);
+    setOnClick('magistersFilterButton', reloadMagisters);
+    setOnClick('addMagisterButton',     addMagisterHandler);
+
     fillStaticSelects();
+    
     authType       = AuthorizedService.getAuthorizedType;
     authorizedData = AuthorizedService.getAuthorizedData;
+    
     groupsTable      = document.getElementById('groupsList').getElementsByTagName('tbody')[0];
     groupsFilterLine = document.getElementById('groupsFilterLine');
+
     magistersTable      = document.getElementById('magistersList').getElementsByTagName('tbody')[0];
     magistersFilterLine = document.getElementById('magistersFilterLine');
+
     errorBar = document.getElementsByTagName('error-bar')[0];
     id = sessionStorage.getItem('disciplineId');
     if(id == null) {

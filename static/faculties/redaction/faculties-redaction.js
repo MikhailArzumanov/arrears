@@ -1,5 +1,7 @@
 import { fadeIn } from "../../-functions/fade.js";
 import { redirect } from "../../-functions/redirect.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnClick } from "../../-functions/setHandler.js";
 import { showError } from "../../-functions/showError.js";
 import { getValueById, setValueById } from "../../-functions/valById.js";
 import { Faculty } from "../../-models/faculty.model.js";
@@ -50,7 +52,6 @@ function fillFields(faculty){
     setValueById('nameField',       faculty.name);
     setValueById('shortNameField',  faculty.shortName);
     setValueById('loginField',      faculty.login);
-    //setValueById('passwordField', faculty.password);
 }
 
 function clearFieldsAndDisableControls(){
@@ -59,12 +60,13 @@ function clearFieldsAndDisableControls(){
         field.value = '';
         field.disabled = true;
     }
-    document.getElementById('saveButton').disabled = true;
-    document.getElementById('deleteButton').disabled = true;
+    setDisable('saveButton', true);
+    setDisable('deleteButton', true);
 }
 
 async function init(){
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     id = sessionStorage.getItem('facultyId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);
@@ -72,11 +74,11 @@ async function init(){
         //setTimeout(() => redirect('/faculties/list'), 1200);
         return;
     }
+
     let response = await FacultiesService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
+    
     fillFields(response);
-    let saveButton = document.getElementById('saveButton');
-    saveButton.onclick = save;
-    let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteFaculty;
+    setOnClick('saveButton', save);
+    setOnClick('deleteButton',deleteFaculty);
 }

@@ -8,6 +8,10 @@ import { AuthorizedService } from "../../-services/-base-services/authorized.ser
 import { DepartmentsService } from "../../-services/departments.service.js";
 import { Magister } from "../../-models/magister.model.js";
 import { MagistersService } from "../../-services/magisters.service.js";
+import { getOptionSN } from "../../-functions/getOption.js";
+import { clearSelect } from "../../-functions/clearSelect.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
@@ -17,7 +21,8 @@ const WAS_NOT_CHOSEN = 'Запись преподавателя не была в
 let id;
 let errorBar;
 let authType;
-let authorizedData;
+//let authorizedData;
+
 let fieldsNames = [
     'idField',        
     'facultyField',   
@@ -80,20 +85,10 @@ function clearFieldsAndDisableControls(){
         field.value = '';
         field.disabled = true;
     }
-    document.getElementById('saveButton').disabled = true;
-    document.getElementById('deleteButton').disabled = true;
+    setDisable('saveButton', true);
+    setDisable('deleteButton', true);
 }
 
-function getOptionSN(faculty){
-    let option = document.createElement('option');
-    option.innerHTML = faculty.shortName;
-    option.value     = faculty.id;
-    return option;
-}
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
 
 function fillSelect(selectId, dataArray, optionFn){
     let select = document.getElementById(selectId);
@@ -106,6 +101,8 @@ function fillSelect(selectId, dataArray, optionFn){
 async function loadAndFillData(facultyId){
     let faculties = await FacultiesService.getAll();
     fillSelect('facultyField', faculties, getOptionSN);
+    let departments = await DepartmentsService.getList(facultyId);
+    fillSelect('departmentField', departments, getOptionSN);
     switch(authType){
         case 'department':
             document.getElementById('departmentField').disabled = true;
@@ -114,8 +111,6 @@ async function loadAndFillData(facultyId){
         case 'admin':
             break;
     }
-    let departments = await DepartmentsService.getList(facultyId);
-    fillSelect('departmentField', departments, getOptionSN);
 }
 
 async function selectFacultyOnChange(event){
@@ -126,10 +121,15 @@ async function selectFacultyOnChange(event){
 }
 
 async function init(){
-    document.getElementById('facultyField').onchange = selectFacultyOnChange;
+    setOnClick('saveButton',save);
+    setOnClick('deleteButton', deleteEntry);
+    setOnChange('facultyField', selectFacultyOnChange);
+
     authType       = AuthorizedService.getAuthorizedType;
-    authorizedData = AuthorizedService.getAuthorizedData;
+    //authorizedData = AuthorizedService.getAuthorizedData;
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+    
     id = sessionStorage.getItem('magisterId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);
@@ -144,8 +144,4 @@ async function init(){
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
     await loadAndFillData(response.department.faculty.id);
     fillFields(response);
-    let saveButton = document.getElementById('saveButton');
-    saveButton.onclick = save;
-    let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteEntry;
 }

@@ -8,6 +8,11 @@ import { AuthorizedService } from "../../-services/-base-services/authorized.ser
 import { ErrorsService } from "../../-services/-base-services/errors.service.js";
 import { ArrearsService } from "../../-services/arrears.service.js";
 import { redirect } from "../../-functions/redirect.js";
+import { getOption } from "../../-functions/getOption.js";
+import { fillRequiredSelect } from "../../-functions/fillSelect.js";
+import { clearSelect } from "../../-functions/clearSelect.js";
+import { setDisable } from "../../-functions/setDisabled.js";
+import { setOnClick } from "../../-functions/setHandler.js";
 
 window.onload = init;
 fadeIn();
@@ -30,17 +35,10 @@ function getFio(model){
     return `${model.surname} ${model.name[0]}. ${model.patronymicName[0]}.`;
 }
 
-function createOption(text, value){
-    let option = document.createElement('option');
-    option.innerHTML = text;
-    option.value     = value;
-    return option;
-}
-
 function createOptionFIO(model){
     let fio = getFio(model);
     let id  = model.id;
-    return createOption(fio, id);
+    return getOption(fio, id);
 }
 
 function setOneChoosenElementAndDisable(selectId, text, value){
@@ -50,36 +48,21 @@ function setOneChoosenElementAndDisable(selectId, text, value){
     select.disabled = true;
 }
 
-function fillSelect(selectId, dataArray, optionFn){
-    let select = document.getElementById(selectId);
-    for(let element of dataArray)
-        select.appendChild(optionFn(element));
-    
-}
 
 async function fillMagisters(){
     let magisters = discipline.magisters;
-    fillSelect('magisterField', magisters, createOptionFIO);
+    fillRequiredSelect('magisterField', magisters, createOptionFIO);
 }
-
-function clearSelect(selectId){
-    document.getElementById(selectId).innerHTML = '';
-}
-
 async function fillStudents(){
     let surnameVal = getValueById('studentFilterField');
     let response = await StudentsService.getList(facultyId,departmentId,groupId,surnameVal,'','',0);
     let students = response.students;
-    fillSelect('studentField', students, createOptionFIO);
+    fillRequiredSelect('studentField', students, createOptionFIO);
 }
 
 async function filterStudents(){
     clearSelect('studentField');
     await fillStudents();
-}
-
-function setOnClick(controlId, handlerFn){
-    document.getElementById(controlId).onclick = handlerFn;
 }
 
 async function saveEntry(){
@@ -100,10 +83,6 @@ async function saveEntry(){
     }
 }
 
-function setDisabled(id){
-    document.getElementById(id).disabled = true;
-}
-
 let controlsIds = [
     'studentFilterField',
     'studentFilterBtn',
@@ -114,7 +93,7 @@ let controlsIds = [
 
 function disableControls(){
     for(let controlId of controlsIds)
-        setDisabled(controlId);
+        setDisable(controlId, true);
 }
 
 async function init(){
@@ -139,8 +118,8 @@ async function init(){
         case 'student':
             let fio = getFio(authorizedData);
             setOneChoosenElementAndDisable('studentField', fio, authorizedData.id);
-            document.getElementById('studentFilterField').disabled = true;
-            document.getElementById('studentFilterBtn').disabled = true;
+            setDisable('studentFilterField', true);
+            setDisable('studentFilterBtn', true);
             break;
         case 'group':
             facultyId    = authorizedData.department.faculty.id;

@@ -7,6 +7,10 @@ import { FacultiesService } from "../../-services/faculties.service.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
 import { DepartmentsService } from "../../-services/departments.service.js";
 import { Department } from "../../-models/department.model.js";
+import { fillRequiredSelect } from "../../-functions/fillSelect.js";
+import { getOptionSN } from "../../-functions/getOption.js";
+import { setOnClick } from "../../-functions/setHandler.js";
+import { setDisable } from "../../-functions/setDisabled.js";
 
 window.onload = init;
 setTimeout(fadeIn, 1200);
@@ -16,7 +20,8 @@ const WAS_NOT_CHOSEN = 'Кафедра не была выбрана';
 let id;
 let errorBar;
 let authType;
-let authorizedData;
+//let authorizedData;
+
 let fieldsNames = [
     'idField',
     'facultyField',      
@@ -25,7 +30,6 @@ let fieldsNames = [
     'loginField',
     'passwordField',   
 ]
-let faculties;
 
 async function save(){
     let facultyId = getValueById('facultyField');
@@ -64,7 +68,6 @@ function fillFields(department){
     setValueById('nameField',       department.name);
     setValueById('shortNameField',  department.shortName);
     setValueById('loginField',      department.login);
-    //setValueById('passwordField', department.password);
 }
 
 function clearFieldsAndDisableControls(){
@@ -73,32 +76,17 @@ function clearFieldsAndDisableControls(){
         field.value = '';
         field.disabled = true;
     }
-    document.getElementById('saveButton').disabled = true;
-    document.getElementById('deleteButton').disabled = true;
+    setDisable('saveButton', true);
+    setDisable('deleteButton', true);
 }
 
 async function loadFaculties(){
-    faculties = await FacultiesService.getAll();
-}
-
-function getFacultyOption(faculty){
-    let option = document.createElement('option');
-    option.innerHTML = faculty.shortName;
-    option.value     = faculty.id;
-    return option;
-}
-
-function fillSelect(selectId, dataArray, optionFn){
-    let select = document.getElementById(selectId);
-    for(let dataCol of dataArray){
-        let option = optionFn(dataCol);
-        select.appendChild(option);
-    }
+    return await FacultiesService.getAll();
 }
 
 async function loadAndFillData(){
-    await loadFaculties();
-    fillSelect('facultyField', faculties, getFacultyOption);
+    let faculties = await loadFaculties();
+    fillRequiredSelect('facultyField', faculties, getOptionSN);
     switch(authType){
         case 'faculty':
             document.getElementById('facultyField').disabled = true;
@@ -108,10 +96,16 @@ async function loadAndFillData(){
 }
 
 async function init(){
+    setOnClick('saveButton', save);
+    setOnClick('deleteButton', deleteEntry);
+
     authType       = AuthorizedService.getAuthorizedType;
-    authorizedData = AuthorizedService.getAuthorizedData;
+    //authorizedData = AuthorizedService.getAuthorizedData;
+
     await loadAndFillData();
+
     errorBar = document.getElementsByTagName('error-bar')[0];
+
     id = sessionStorage.getItem('departmentId');
     if(id == null) {
         showError(WAS_NOT_CHOSEN, errorBar);
@@ -119,14 +113,11 @@ async function init(){
         //setTimeout(() => redirect('/departments/list'), 1200);
         return;
     }
+
     let response;
     if(authType == "admin")
         response = await DepartmentsService.getConcreteAsAdministrator(id);
     else response = await DepartmentsService.getConcrete(id);
     if(response == null){showError(ErrorsService.getLastError(), errorBar); return;}
     fillFields(response);
-    let saveButton = document.getElementById('saveButton');
-    saveButton.onclick = save;
-    let deleteButton = document.getElementById('deleteButton');
-    deleteButton.onclick = deleteEntry;
 }

@@ -50,7 +50,7 @@ async function addFaculty(){
     if(response == null) {showError(ErrorsService.getLastError(), errorBar);return}
 
     let tr = getTableRow(response.id, response.shortName);
-    table.appendChild(tr, additionRow);
+    table.insertBefore(tr, additionRow);
 }
 
 function addFacultyButtonColumn(row, tdClass, buttonInnerHtml, buttonHandler, id, facultyName=null){
