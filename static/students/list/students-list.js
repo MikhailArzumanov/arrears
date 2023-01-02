@@ -4,10 +4,8 @@ import { clearSelect } from "../../-functions/clearSelect.js";
 import { clearTable } from "../../-functions/clearTable.js";
 import { createAdditionRow } from "../../-functions/createAdditionRow.js";
 import { fadeIn } from "../../-functions/fade.js";
-import { fillSelect } from "../../-functions/fillSelect.js";
 import { fillDepartments, fillFaculties, fillGroups } from "../../-functions/fillSelects.js";
 import { fillTableData } from "../../-functions/fillTableData.js";
-import { getOptionN, getOptionSN } from "../../-functions/getOption.js";
 import { redirect } from "../../-functions/redirect.js";
 import { setDisable } from "../../-functions/setDisabled.js";
 import { setOnChange, setOnClick } from "../../-functions/setHandler.js";
@@ -17,7 +15,6 @@ import { Student } from "../../-models/student.model.js";
 import { AuthorizedService } from "../../-services/-base-services/authorized.service.js";
 import { ErrorsService } from "../../-services/-base-services/errors.service.js";
 import { DepartmentsService } from "../../-services/departments.service.js";
-import { FacultiesService } from "../../-services/faculties.service.js";
 import { GroupsService } from "../../-services/groups.service.js";
 import { StudentsService } from "../../-services/students.service.js";
 
