@@ -30,7 +30,7 @@ const closeArrearType   = ['faculty'];
 const firstYear = 2018;
 const lastYear  = 2022;
 const semesters = ['осенний','весенний'];
-const passTypes = ['зачет','диф. зачет', 'экзамен'];
+const passTypes = ['зачет','диф. зачет', 'экзамен', 'курсовая работа', 'практика'];
 const statuses  = [
     {text:"ожидание выдачи",   value:1},
     {text:"ожидание оценки",   value:2},

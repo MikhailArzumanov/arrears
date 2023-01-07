@@ -30,7 +30,7 @@ const getSheetTypes = ['group', 'student'];
 const firstYear = 2018;
 const lastYear  = 2022;
 const semesters = ['осенний','весенний'];
-const passTypes = ['зачет','диф. зачет', 'экзамен']
+const passTypes = ['зачет','диф. зачет', 'экзамен', 'курсовая работа', 'практика']
 
 let pageNum = 1;
 let table;
