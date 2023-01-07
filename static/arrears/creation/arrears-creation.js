@@ -48,7 +48,7 @@ function createOptionFIO(model){
 
 function setOneChoosenElementAndDisable(selectId, text, value){
     let select = document.getElementById(selectId);
-    let option = createOption(text, value);
+    let option = getOption(text, value);
     select.appendChild(option);
     select.disabled = true;
 }
